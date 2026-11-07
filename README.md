@@ -19,3 +19,9 @@ Giải nén ZIP, upload **toàn bộ nội dung bên trong thư mục** `SVI_YEP
 Giá và điều kiện là dữ liệu Working chưa chốt. Le Méridien, Lotte và Sheraton hiện chưa cung cấp danh sách món chi tiết trong các tài liệu đã nhận; chỉ trình bày tên gói và giá của họ.
 
 CẢNH BÁO: GitHub Pages thường công khai. Cần xem xét quyền chia sẻ thông tin thương mại trước khi publish.
+
+## Cập nhật Working – 07/11/2026
+- Lotte Saigon: Sapphire Ballroom, diện tích 405 m², tối thiểu 100 khách (người dùng cung cấp).
+- Dòng sân khấu Lotte, Le Méridien, Sheraton: “Sân khấu tiêu chuẩn theo thiết kế LED”; chưa có kích thước cụ thể.
+- Hilton: giữ nguyên kích thước sân khấu trong báo giá.
+- Không thay đổi các tab Thực đơn và Hình ảnh minh họa.
