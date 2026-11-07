@@ -26,5 +26,11 @@ CẢNH BÁO: GitHub Pages thường công khai. Cần xem xét quyền chia sẻ
 - Hilton: giữ nguyên kích thước sân khấu trong báo giá.
 - Không thay đổi các tab Thực đơn và Hình ảnh minh họa.
 
-## Cập nhật gallery Le Méridien
-Thêm 9 ảnh tiền sảnh và foyer; hiện Le Méridien có 12 ảnh và toàn bộ gallery có 29 ảnh. Ảnh được lưu dưới `assets/venues/` dạng WebP.
+
+### Cập nhật thực đơn Lotte
+
+Tab THỰC ĐƠN có đầy đủ Set Menu A/B/C và Buffet 1–5 (mở/thu gọn từng menu). Hai PDF gốc nằm trong `menus/` và được liên kết ngay trong tab. Mức giá giữ theo báo giá Lotte: Set A/B/C lần lượt 1.200.000 / 1.300.000 / 1.400.000đ nett; Buffet 1–2: 1.300.000đ nett, 3–4: 1.400.000đ nett, 5: 1.500.000đ nett. Giá chưa bao gồm đồ uống.
+
+
+### Le Méridien – thực đơn mới (11/2026)
+Tab THỰC ĐƠN đã bổ sung 3 Asian Set (Standard/Premium/Deluxe), 5 Buffet tiêu chuẩn (#1, #2.1, #2.2, #3.1, #3.2), 2 Buffet Luxury riêng (#3.1, #3.2). Nội dung menu được giữ nguyên theo bố cục ảnh từng trang PDF, thu gọn cho đến khi mở; nhấp ảnh để xem lớn. Các PDF gốc trong `menus/`, ảnh thực đơn ở `assets/menus/lemeridien/`. Giá Luxury 2.200.000đ++ là mức riêng chưa nằm trong 3 gói cơ sở, cần xác nhận quyền lợi.

@@ -83,3 +83,22 @@
 .content-tab:focus-visible{outline:3px solid #df9d42;outline-offset:3px}
 @media(max-width:860px){.content-tab{font-size:13px;padding:14px 16px}}
 @media print{.content-tabs{display:none!important}}
+
+/* LOTTE: full bilingual PDF menu entries, collapsed until opened */
+.lotte-menu-detail { margin-top: 12px; }
+.lotte-dishes { padding: 12px 17px 16px; }
+.lotte-menu-subheading { margin: 16px 0 7px; font-size: 14px; color: #24436c; font-weight: 800; }
+.lotte-menu-subheading:first-child { margin-top: 2px; }
+.lotte-dish-list { margin: 0 0 10px; padding-left: 24px; }
+.lotte-dish-list li { padding: 3px 0; line-height: 1.55; overflow-wrap: anywhere; }
+@media print { .lotte-menu-detail:not([open]) .lotte-dishes { display: none; } }
+
+/* Le Méridien source menu PDF pages inside expandable cards */
+.lm-menu-detail>summary{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.lm-menu-detail>summary strong{color:#174c88;font-size:13px}
+.lm-pages{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:14px;padding:16px}
+.lm-menu-page{margin:0;border:1px solid #dfe6f0;border-radius:10px;overflow:hidden;background:#fff}
+.lm-menu-page img{display:block;width:100%;height:auto;object-fit:contain}
+.lm-menu-page figcaption{text-align:center;color:#667892;padding:8px;font-size:12px}
+.lm-menu-page a{display:block;cursor:zoom-in}
+@media print {.lm-pages{grid-template-columns:repeat(2,1fr)}.lm-menu-page{break-inside:avoid}}
