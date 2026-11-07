@@ -60,3 +60,11 @@
 .menu-footnote{background:#fff;padding:16px 18px;border:1px solid #dce4ef;border-radius:9px}
 @media(max-width:650px){.menu-overview{grid-template-columns:100px 1fr;gap:12px}.menu-card>summary{padding:14px}.menu-content{padding:14px}.menu-card-title span{font-size:14px}.menu-chevron{font-size:11px}}
 @media print{.menu-toolbar{display:none}.menu-card{break-inside:avoid}.menu-card>summary{padding:10px}}
+
+/* FIX: the quotation table must scroll with the page (not its own scrollport),
+   otherwise position:sticky on the hotel headings is ineffective. */
+@media screen and (min-width: 1250px){
+  #panel-prices .tablewrap{overflow:visible;}
+  #panel-prices thead th{position:sticky;top:0;z-index:30;box-shadow:0 3px 5px rgba(15,31,62,.12)}
+  #panel-prices thead th:first-child{position:sticky;left:0;z-index:32}
+}
