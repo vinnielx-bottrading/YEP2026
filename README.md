@@ -25,3 +25,6 @@ CẢNH BÁO: GitHub Pages thường công khai. Cần xem xét quyền chia sẻ
 - Dòng sân khấu Lotte, Le Méridien, Sheraton: “Sân khấu tiêu chuẩn theo thiết kế LED”; chưa có kích thước cụ thể.
 - Hilton: giữ nguyên kích thước sân khấu trong báo giá.
 - Không thay đổi các tab Thực đơn và Hình ảnh minh họa.
+
+## Cập nhật gallery Le Méridien
+Thêm 9 ảnh tiền sảnh và foyer; hiện Le Méridien có 12 ảnh và toàn bộ gallery có 29 ảnh. Ảnh được lưu dưới `assets/venues/` dạng WebP.

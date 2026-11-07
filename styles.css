@@ -68,3 +68,18 @@
   #panel-prices thead th{position:sticky;top:0;z-index:30;box-shadow:0 3px 5px rgba(15,31,62,.12)}
   #panel-prices thead th:first-child{position:sticky;left:0;z-index:32}
 }
+
+/* Navigation tabs – stronger section identity, distinct colors per content type. */
+.content-tabs{gap:12px;padding:10px;background:#e9eef6;border:1px solid #d2ddeb;box-shadow:0 4px 18px rgba(27,49,85,.05)}
+.content-tab{font-weight:800;font-size:13px;letter-spacing:.55px;line-height:1.35;border:1px solid transparent;padding:15px 19px;transition:background-color .18s ease,color .18s ease,box-shadow .18s ease,transform .18s ease;}
+.content-tab span{font-size:11px;font-weight:700;letter-spacing:0;text-transform:none;white-space:nowrap;opacity:.9;}
+#tab-prices{background:#dbe7fa;color:#173b77;border-color:#bcd0f1}
+#tab-gallery{background:#e7e2f8;color:#543a8f;border-color:#cdc3ed}
+#tab-menus{background:#e1f0e9;color:#1e684b;border-color:#c1e0d1}
+#tab-prices.active{background:#193f7e;color:white;border-color:#193f7e;box-shadow:0 3px 12px rgba(25,63,126,.24)}
+#tab-gallery.active{background:#65469b;color:white;border-color:#65469b;box-shadow:0 3px 12px rgba(101,70,155,.25)}
+#tab-menus.active{background:#237454;color:white;border-color:#237454;box-shadow:0 3px 12px rgba(35,116,84,.23)}
+.content-tab:hover:not(.active){filter:saturate(1.25) brightness(.97);box-shadow:0 2px 6px rgba(25,40,70,.10)}
+.content-tab:focus-visible{outline:3px solid #df9d42;outline-offset:3px}
+@media(max-width:860px){.content-tab{font-size:13px;padding:14px 16px}}
+@media print{.content-tabs{display:none!important}}
