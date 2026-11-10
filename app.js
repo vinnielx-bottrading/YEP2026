@@ -32,87 +32,275 @@ document.querySelectorAll('[data-filter-menu]').forEach(button=>button.addEventL
  document.querySelectorAll('[data-menu-hotel]').forEach(card=>card.hidden=hotel!=='all'&&card.dataset.menuHotel!==hotel);
 }));
 
-// Set Menu comparison: full itemized fees, editable costs and readable menus.
+
+// ===== SO SÁNH CHI PHÍ — Lotte Saigon & Le Méridien (v14) =====
+// Bảng tổng hợp và bảng chi tiết đều trình bày 2 cột: Lotte | Le Méridien | Chênh lệch.
 (function(){
- const ids=['cp-guests','cp-hours','cp-lotte-menu','cp-lotte-drink','cp-lotte-service','cp-lotte-vat','cp-lotte-extras','cp-lm-menu','cp-lm-included-drink','cp-lm-extra-hour','cp-lm-service','cp-lm-vat','cp-lm-extras'];
- const defaults={'cp-guests':'120','cp-hours':'3','cp-lotte-menu':'1200000','cp-lotte-drink':'450000','cp-lotte-extra-hour':'225000','cp-lotte-service':'5','cp-lotte-vat':'8','cp-lotte-extras':'0','cp-lm-menu':'1100000','cp-lm-included-drink':'450000','cp-lm-extra-hour':'250000','cp-lm-service':'5','cp-lm-vat':'8','cp-lm-extras':'0'};
- const el=id=>document.getElementById(id),num=id=>Math.max(0,Number(el(id).value)||0),fmt=n=>Math.round(n).toLocaleString('vi-VN')+'đ',set=(id,v)=>{el(id).textContent=v};
- const keys=['lotte','lm'];const lineRows=[...document.querySelectorAll('tr[data-cp-extra]')];
- const key='svi-yep-comparison-itemized-v5';const oldKey='svi-yep-comparison-itemized-v4';
- function store(){try{const fields={};ids.forEach(id=>fields[id]=el(id).value);const costs={};lineRows.forEach(row=>{costs[row.dataset.cpExtra+':'+row.dataset.extraKey]={qty:row.querySelector('.cp-qty').value,price:row.querySelector('.cp-price').value}});localStorage.setItem(key,JSON.stringify({fields,costs}))}catch(_){}}
- function restore(){let data={};try{data=JSON.parse(localStorage.getItem(key)||localStorage.getItem(oldKey)||'{}')}catch(_){}if(!localStorage.getItem(key)){if(data.fields){data.fields['cp-lotte-service']='5';data.fields['cp-lotte-vat']='8';const map={'1550000':'1100000','1750000':'1300000','2000000':'1550000'};data.fields['cp-lm-menu']=map[data.fields['cp-lm-menu']]||data.fields['cp-lm-menu'];}}ids.forEach(id=>{const v=String(data.fields?.[id]??defaults[id]);el(id).value=(el(id).tagName==='SELECT' && ![...el(id).options].some(o=>o.value===v))?defaults[id]:v});lineRows.forEach(row=>{const d=data.costs?.[row.dataset.cpExtra+':'+row.dataset.extraKey];if(d){row.querySelector('.cp-qty').value=d.qty;row.querySelector('.cp-price').value=d.price}})}
- function menuPreview(){const a=el('cp-lotte-menu').selectedIndex,b=el('cp-lm-menu').selectedIndex;document.querySelectorAll('.cp-menu-panel').forEach(p=>{p.hidden=Number(p.dataset.menuIndex)!==(p.dataset.cpMenu==='lotte'?a:b)})}
- function calcExtras(hotel,servicePct,vatPct){
-   let subtotal=0,addService=0,addVat=0,ledTotal=0,otherTotal=0;
-   const ledKeys=new Set(['led','ledupgrade','ledbase']);
-   lineRows.filter(r=>r.dataset.cpExtra===hotel).forEach(row=>{
-    const qty=Math.max(0,Number(row.querySelector('.cp-qty').value)||0),price=Math.max(0,Number(row.querySelector('.cp-price').value)||0),base=qty*price;
-    const fee=row.dataset.basis==='++'?base*servicePct/100:0;
-    const tax=row.dataset.basis==='++'?(base+fee)*vatPct/100:0;
-    const total=base+fee+tax;
-    row.querySelector('.cp-row-total').textContent=fmt(total);
-    subtotal+=total;addService+=fee;addVat+=tax;
-    if(ledKeys.has(row.dataset.extraKey)) ledTotal+=total; else otherTotal+=total;
+ const $=id=>document.getElementById(id);
+ if(!$('cx-cmp'))return;
+ const STORE_KEY='svi-yep-compare-choices';
+ const fmt=n=>Math.round(n).toLocaleString('vi-VN')+'đ';
+ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+ const LOTTE_MENUS=[{name:'Set A',price:1200000},{name:'Set B',price:1300000},{name:'Set C',price:1400000}];
+ const LOTTE_DRINKS=[{name:'Nước ngọt + nước lọc',price:250000},{name:'Bia Tiger + nước suối',price:450000},{name:'Bia Tiger + nước ngọt + vang nhà',price:600000}];
+ const LM_MIN_GUESTS=150, LM_MIN_REVENUE=250000000;
+ const LM_PKGS=[{name:'Festive Standard',price:1550000},{name:'Festive Premium',price:1750000},{name:'Festive Deluxe',price:2000000}];
+
+ // Danh mục dùng chung: cùng hạng mục, cùng thứ tự cho hai khách sạn.
+ // t:'priced' = có đơn giá (đơn giá × SL, mode 'guest' nhân thêm số khách) | t:'free' = khách sạn miễn phí
+ const CATALOG=[
+  {k:'led',g:'B',name:'Màn hình LED sân khấu',
+   lotte:{done:true,t:'priced',unit:'m²',price:1200000,qty:24,on:true,note:'Thuê 1.200.000đ/m²/ngày, tối thiểu 10 m².'},
+   lm:{t:'free',note:'Miễn phí LED P1.5 rộng đến 7,2 m (3,375 × 7,2 m). Mở rộng tối đa 12 m (12 × 3,375 m): cộng thêm 20.000.000đ++.'}},
+  {k:'micro',g:'B',name:'Âm thanh & micro',
+   lotte:{done:true,t:'priced',unit:'micro',price:1000000,qty:4,on:true,note:'Âm thanh miễn phí; micro 1.000.000đ++/micro/ngày.'},
+   lm:{t:'free',note:'Âm thanh miễn phí, gồm 4 micro.'}},
+  {k:'outside',g:'B',name:'Phí mang thiết bị ngoài vào',
+   lotte:{done:true,t:'priced',unit:'sự kiện',price:8000000,qty:1,on:true,note:'Khi dùng LED/âm thanh/ánh sáng của đơn vị ngoài.'},
+   lm:{t:'free'}},
+  {k:'welcome',g:'C',name:'Welcome drink / canapé',
+   lotte:{t:'priced',unit:'khách',price:300000,qty:1,mode:'guest',on:true,note:'3 canapé + 1 mocktail/nước ép mỗi khách.'},
+   lm:{t:'cond',unit:'khách',price:300000,qty:1,mode:'guest',on:true,note:'Miễn phí 1 lượt mocktail HOẶC 2 canapé khi ≥150 khách hoặc doanh thu ≥250 triệu++. Chưa đạt thì tính phí — đơn giá đang tạm tính bằng mức Lotte, chờ Le Méridien báo giá.'}},
+  {k:'wine',g:'C',name:'Rượu vang của khách sạn',
+   lotte:{t:'priced',unit:'chai',price:1300000,qty:5,on:true,note:'Chiara Terra 750 ml.'},
+   lm:{t:'priced',unit:'chai',price:800000,qty:5,on:true}},
+  {k:'corkwine',g:'C',name:'Corkage vang / champagne mang vào',
+   lotte:{t:'priced',unit:'chai',price:400000,qty:2,on:true},
+   lm:{t:'priced',unit:'chai',price:900000,qty:2,on:true}},
+  {k:'corkspirit',g:'C',name:'Corkage rượu mạnh / soju mang vào',
+   lotte:{t:'priced',unit:'chai',price:600000,qty:6,on:true},
+   lm:{t:'priced',unit:'chai',price:1000000,qty:6,on:true}},
+  {k:'bike',g:'C',name:'Gửi xe máy',
+   lotte:{t:'priced',unit:'xe',price:6000,qty:80,on:true,note:'6.000đ/xe/4 giờ.'},
+   lm:{t:'free'}},
+  {k:'car',g:'C',name:'Gửi ô tô',
+   lotte:{t:'priced',unit:'xe',price:50000,qty:50,on:true,note:'50.000đ/xe/4 giờ.'},
+   lm:{t:'free'}}
+ ];
+ const ITEMS={lotte:[],lm:[]};
+ CATALOG.forEach(c=>['lotte','lm'].forEach(h=>ITEMS[h].push(Object.assign({k:c.k,g:c.g,name:c.name,unit:'',price:0,qty:1,on:false},c[h]))));
+ const GROUPS={A:'A · Ăn uống',B:'B · LED, âm thanh & kỹ thuật',C:'C · Welcome, đồ uống mang vào & vận hành'};
+ const STATUS=[['draft','Dự tính'],['confirmed','Đã chốt']];
+
+ const DEFAULTS={guests:[120,140,150],hours:3,svc:5,lmDrink:450000,lotteMenu:2,lotteDrink:2,lmMenu:0,lmH3:250000,reserve:0,view:0,locked:false,items:{}};
+ let S=JSON.parse(JSON.stringify(DEFAULTS));
+ function itemState(h,it){const key=h+':'+it.k;if(!S.items[key])S.items[key]={on:it.on,price:it.price,qty:it.qty,status:it.done?'confirmed':'draft'};const st=S.items[key];if(st.status==='pending')st.status='draft';return st}
+ function load(){S=JSON.parse(JSON.stringify(DEFAULTS));S.locked=true;try{const d=JSON.parse(localStorage.getItem(STORE_KEY)||'null');if(d)OPEN_KEYS.forEach(k=>{if(d[k]!=null)S[k]=d[k]})}catch(_){}}
+ function save(){try{localStorage.setItem(STORE_KEY,JSON.stringify(Object.fromEntries(OPEN_KEYS.map(k=>[k,S[k]]))))}catch(_){}}
+
+ // ===== Tính toán =====
+ function compute(){
+  const G=S.guests.map(g=>Math.max(1,Math.floor(Number(g)||1)));
+  const h3=Number(S.hours)===3, svc=S.svc/100, mult=1+svc;
+  const taxRows=(pre)=>[{name:'Phí phục vụ',info:S.svc+'% trên tiền ăn uống',amt:pre.map(p=>p*svc)}];
+  // Lotte
+  const lm=LOTTE_MENUS[S.lotteMenu], ld=LOTTE_DRINKS[S.lotteDrink], lH3=ld.price*0.5;
+  const L={hotel:'lotte',G,fnb:[],items:[]};
+  L.fnb.push({name:'Set Menu',price:lm.price,amt:G.map(g=>g*lm.price),note:lm.name+' — chỉ thức ăn.'});
+  L.fnb.push({name:'Đồ uống 2 giờ',price:ld.price,amt:G.map(g=>g*ld.price),note:ld.name+'.'});
+  L.fnb.push({name:'Đồ uống giờ thứ 3',price:lH3,off:!h3,amt:G.map(g=>h3?g*lH3:0),note:'Free flow giờ thứ 3 = 50% giá đồ uống 2 giờ ('+fmt(lH3)+'/khách).'});
+  L.fnb.push(...taxRows(G.map(g=>g*(lm.price+ld.price+(h3?lH3:0)))));
+  // Le Méridien
+  const mp=LM_PKGS[S.lmMenu], mFood=mp.price-S.lmDrink;
+  const M={hotel:'lm',G,fnb:[],items:[]};
+  M.fnb.push({name:'Set Menu',price:mFood,amt:G.map(g=>g*mFood),note:'Gói '+mp.name+' '+fmt(mp.price)+' = món ăn + đồ uống 2 giờ.'});
+  M.fnb.push({name:'Đồ uống 2 giờ',price:S.lmDrink,amt:G.map(g=>g*S.lmDrink),note:'Free flow bia + nước ngọt + nước lọc.'});
+  M.fnb.push({name:'Đồ uống giờ thứ 3',price:S.lmH3,off:!h3,editH3:true,amt:G.map(g=>h3?g*S.lmH3:0),note:'Free flow giờ thứ 3: '+fmt(S.lmH3)+'/khách.'});
+  M.revenue=G.map(g=>g*(mp.price+(h3?S.lmH3:0)));
+  M.qual=G.map((g,i)=>g>=LM_MIN_GUESTS||M.revenue[i]>=LM_MIN_REVENUE);
+  M.fnb.push(...taxRows(M.revenue));
+  // Khoản bổ sung
+  for(const R of [L,M]){
+   ITEMS[R.hotel].forEach(it=>{
+    if(it.t==='free'){R.items.push({it,st:{},price:0,qty:0,cells:G.map(()=>({amt:0,label:'Miễn phí',kind:'free'}))});return}
+    const st=itemState(R.hotel,it),price=Math.max(0,Number(st.price)||0),qty=Math.max(0,Number(st.qty)||0);
+    const cells=G.map((g,i)=>{
+     if(!st.on)return {amt:0,label:'Không dùng',kind:'off'};
+     if(it.t==='cond'&&R.qual[i])return {amt:0,label:'Miễn phí',kind:'free'};
+     if(price<=0||qty<=0)return {amt:0,label:'Chưa nhập giá/SL',kind:'unpriced'};
+     const v=price*qty*(it.mode==='guest'?g:1)*mult;return {amt:v,label:fmt(v),kind:'amt'};
+    });
+    R.items.push({it,st,price,qty,cells});
    });
-   set('cp-cost-sum-'+hotel,fmt(subtotal));
-   return {subtotal,addService,addVat,ledTotal,otherTotal}
+   R.subA=G.map((_,i)=>R.fnb.reduce((s,r)=>s+r.amt[i],0));
+   R.subB=G.map((_,i)=>R.items.filter(x=>x.it.g==='B').reduce((s,x)=>s+x.cells[i].amt,0));
+   R.subC=G.map((_,i)=>R.items.filter(x=>x.it.g==='C').reduce((s,x)=>s+x.cells[i].amt,0));
+   R.total=G.map((_,i)=>R.subA[i]+R.subB[i]+R.subC[i]);
+   R.reserve=R.total.map(v=>v*(Number(S.reserve)||0)/100);
+   R.budget=R.total.map((v,i)=>v+R.reserve[i]);
   }
- function calc(){
-  const guests=Math.max(1,Math.floor(num('cp-guests'))||1),hours=num('cp-hours');
-  const lMenu=num('cp-lotte-menu'),lD2=num('cp-lotte-drink'),lD3=hours===3?lD2*0.5:0;el('cp-lotte-extra-hour').value=String(lD2*0.5);
-  const lPre=lMenu+lD2+lD3,lSvc=lPre*num('cp-lotte-service')/100,lVat=(lPre+lSvc)*num('cp-lotte-vat')/100,lBase=lPre+lSvc+lVat;
-  const mFood=num('cp-lm-menu'),mAlloc=num('cp-lm-included-drink'),mPackage=mFood+mAlloc,mD3=hours===3?num('cp-lm-extra-hour'):0,mPre=mPackage+mD3,mSvc=mPre*num('cp-lm-service')/100,mVat=(mPre+mSvc)*num('cp-lm-vat')/100,mBase=mPre+mSvc+mVat;
-  const lExtraBreakdown=calcExtras('lotte',num('cp-lotte-service'),num('cp-lotte-vat'));
-  const mExtraBreakdown=calcExtras('lm',num('cp-lm-service'),num('cp-lm-vat'));
-  const lManual=num('cp-lotte-extras'),mManual=num('cp-lm-extras');
-  const lLed=lExtraBreakdown.ledTotal,mLed=mExtraBreakdown.ledTotal;
-  const lOtherItems=lExtraBreakdown.otherTotal,mOtherItems=mExtraBreakdown.otherTotal;
-  const lOther=lOtherItems+lManual,mOther=mOtherItems+mManual;
-  const lExtra=lLed+lOther,mExtra=mLed+mOther;
-  set('cp-line-menu-l',fmt(lMenu)+' nett');set('cp-line-menu-m',fmt(mFood)+'++');
-  set('cp-line-included-l',fmt(lD2)+' nett');set('cp-line-included-m',fmt(mAlloc)+'++');
-  set('cp-line-extrahour-l',hours===3?fmt(lD3)+' nett':'0đ');set('cp-line-extrahour-m',hours===3?fmt(mD3)+'++':'0đ');
-  set('cp-line-tax-l',fmt(lSvc+lVat));set('cp-line-tax-m',fmt(mSvc+mVat));
-  set('cp-line-person-l',fmt(lBase));set('cp-line-person-m',fmt(mBase));
-  set('cp-line-led-l',fmt(lLed));set('cp-line-led-m',fmt(mLed));
-  set('cp-line-otheritems-l',fmt(lOtherItems));set('cp-line-otheritems-m',fmt(mOtherItems));
-  set('cp-line-manual-l',fmt(lManual));set('cp-line-manual-m',fmt(mManual));
-  set('cp-line-other-l',fmt(lOther));set('cp-line-other-m',fmt(mOther));
-  for(const n of [120,150]){set('cp-line-'+n+'-l',fmt(n*lBase));set('cp-line-'+n+'-m',fmt(n*mBase));set('cp-line-'+n+'full-l',fmt(n*lBase+lExtra));set('cp-line-'+n+'full-m',fmt(n*mBase+mExtra))}
-  set('cp-line-custom-label',guests+' khách · set menu & đồ uống');
-  const lBaseTotal=guests*lBase,mBaseTotal=guests*mBase;
-  set('cp-line-custombase-l',fmt(lBaseTotal));set('cp-line-custombase-m',fmt(mBaseTotal));
-  const lt=lBaseTotal+lExtra,mt=mBaseTotal+mExtra;set('cp-line-custom-l',fmt(lt));set('cp-line-custom-m',fmt(mt));
-  set('cp-difference',(lt===mt?'Hai phương án bằng nhau':(lt<mt?'Lotte thấp hơn ':'Le Méridien thấp hơn ')+fmt(Math.abs(lt-mt))));
-  set('cp-context','Bảng so sánh '+hours+' giờ đồ uống; phí phục vụ '+num('cp-lotte-service')+'% / VAT '+num('cp-lotte-vat')+'% cho Lotte và '+num('cp-lm-service')+'% / '+num('cp-lm-vat')+'% cho Le Méridien. Lưu ý giá Lotte vốn nett đã gồm thuế/phí: nên đặt hai ô Lotte về 0% khi lập dự toán chi trả để tránh cộng trùng. Các khoản chưa có đơn giá và để 0 chưa được cộng vào tổng.');
-  const qualifies=guests>=150 || guests*mPackage>=250000000;
-  el('cp-benefits').innerHTML='<div><strong>LOTTE · GIÁ NỀN THẤP NHƯNG ÍT QUYỀN LỢI KỸ THUẬT</strong><p>405 m²; 1.200.000–1.400.000đ nett suất ăn; đồ uống 450.000đ nett/2 giờ. Phí welcome, màn LED, backdrop, thiết bị ngoài, nâng cấp kỹ thuật được kê ở bảng chi phí dưới thẻ Lotte. Chưa có báo giá sân khấu hoặc âm thanh biểu diễn hoàn chỉnh.</p></div>'+
-  '<div><strong>LE MÉRIDIEN · QUYỀN LỢI PHỤ THUỘC NGƯỠNG</strong><p>'+(qualifies?'<b>Đạt ngưỡng về số khách/doanh thu trong phép tính; vẫn cần xác nhận với khách sạn.</b>':'<b>Chưa đạt ngưỡng quyền lợi theo giả định.</b>')+' LED P1.5 3,375 × 7,2 m, backdrop 3 × 4 m, âm thanh/ánh sáng tiêu chuẩn, 4 micro, hoa, gửi xe và 01 lượt welcome mocktail <b>HOẶC</b> 02 canapé. Điều kiện ≥150 khách HOẶC doanh thu bảo đảm ≥250 triệu đồng++ trước thuế (cần xác minh). Đây không phải tất cả dịch vụ được miễn phí ở 120 khách.</p></div>';
-  menuPreview();return {guests,hours,lMenu,lD2,lD3,lSvc,lVat,lBase,lLed,lOtherItems,lManual,lOther,lExtra,mPackage,mFood,mAlloc,mD3,mSvc,mVat,mBase,mLed,mOtherItems,mManual,mOther,mExtra,lt,mt}
+  return {G,L,M,h3};
  }
- [...ids.map(el),...lineRows.flatMap(r=>[r.querySelector('.cp-qty'),r.querySelector('.cp-price')])].forEach(input=>{input.addEventListener('input',()=>{calc();store()});if(input.tagName==='SELECT')input.addEventListener('change',()=>{calc();store()})});
- el('cp-reset').addEventListener('click',()=>{ids.forEach(id=>el(id).value=defaults[id]);lineRows.forEach(r=>r.querySelector('.cp-qty').value='0');calc();store()});
- el('cp-export').addEventListener('click',()=>{const d=calc();
-const rows=[['Hạng mục','Lotte','Le Méridien'],
-['1. Chi phí Set Menu & đồ uống','',''],
-['Set Menu / khách',d.lMenu,d.mFood],
-['Đồ uống 2 giờ / khách',d.lD2,d.mAlloc],
-['Đồ uống giờ thứ 3 / khách',d.hours===3?d.lD3:0,d.hours===3?d.mD3:0],
-['Phí phục vụ & VAT / khách',d.lSvc+d.lVat,d.mSvc+d.mVat],
-['Tổng set menu & đồ uống / khách',d.lBase,d.mBase],
-['120 khách · set menu & đồ uống',120*d.lBase,120*d.mBase],
-['150 khách · set menu & đồ uống',150*d.lBase,150*d.mBase],
-['2. Chi phí LED','',''],
-['LED đang chọn (toàn sự kiện)',d.lLed,d.mLed],
-['3. Các chi phí khác','',''],
-['Các khoản khác từ bảng kê',d.lOtherItems,d.mOtherItems],
-['Phát sinh chưa phân loại',d.lManual,d.mManual],
-['Tổng chi phí khác',d.lOther,d.mOther],
-['Tổng dự trù · số khách tự chọn',d.lt,d.mt],
-['120 khách · gồm LED & chi phí khác',120*d.lBase+d.lExtra,120*d.mBase+d.mExtra],
-['150 khách · gồm LED & chi phí khác',150*d.lBase+d.lExtra,150*d.mBase+d.mExtra]];
-  lineRows.forEach(r=>{const hotel=r.dataset.cpExtra;const subtotal=Math.max(0,Number(r.querySelector('.cp-qty').value)||0)*Math.max(0,Number(r.querySelector('.cp-price').value)||0);rows.push(['Khoản thêm: '+r.children[0].textContent,hotel==='lotte'?subtotal:'',hotel==='lm'?subtotal:''])});
-  const csv='\ufeff'+rows.map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='SVI_Lotte_LeMeridien_ChiPhi_ChiTiet.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)
+
+ // ===== Hiển thị =====
+ const diff=(a,b)=>{const x=b-a;return x===0?'<span class="muted">—</span>':'<span class="'+(x>0?'cx-up':'cx-down')+'">'+(x>0?'+':'−')+fmt(Math.abs(x))+'</span>'};
+ // Bảng tổng hợp: 2 cột khách sạn, nhóm theo kịch bản số khách
+ function summaryHTML(d){
+  const {G,L,M}=d;
+  let h='<colgroup><col class="s-name"><col class="s-v"><col class="s-v"><col class="s-v"></colgroup><thead><tr><th>Hạng mục</th><th class="num h-lotte">LOTTE SAIGON</th><th class="num h-lm">LE MÉRIDIEN SAIGON</th><th class="num">Chênh lệch<small>LM − Lotte</small></th></tr></thead><tbody>';
+  const row=(lab,a,b,cls,f)=>'<tr'+(cls?' class="'+cls+'"':'')+'><td>'+lab+'</td><td class="num">'+(f||fmt)(a)+'</td><td class="num">'+(f||fmt)(b)+'</td><td class="num">'+diff(a,b)+'</td></tr>';
+  G.forEach((g,i)=>{
+   h+='<tr class="cx-scen"><th colspan="4">'+g+' KHÁCH</th></tr>';
+   h+=row(GROUPS.A+' (gồm phí phục vụ)',L.subA[i],M.subA[i]);
+   h+=row(GROUPS.B,L.subB[i],M.subB[i]);
+   h+=row(GROUPS.C,L.subC[i],M.subC[i]);
+   h+=row('<b>Tổng chi phí</b>',L.total[i],M.total[i],'cx-total',v=>'<b>'+fmt(v)+'</b>');
+   h+=row('Bình quân / khách',L.total[i]/g,M.total[i]/g,'cx-avg');
+   if(Number(S.reserve)>0){h+=row('Dự phòng phát sinh '+S.reserve+'%',L.reserve[i],M.reserve[i]);h+=row('<b>Ngân sách đề xuất</b>',L.budget[i],M.budget[i],'cx-total',v=>'<b>'+fmt(v)+'</b>');}
+   h+='<tr class="cx-avg"><td>Ngưỡng ưu đãi Le Méridien (≥150 khách hoặc ≥250tr++)</td><td class="num muted">—</td><td class="num">'+(M.qual[i]?'<span class="cx-down">Đạt</span>':'<span class="cx-up">Chưa đạt</span>')+'<small>doanh thu '+fmt(M.revenue[i])+'++</small></td><td></td></tr>';
+  });
+  return h+'</tbody>';
+ }
+ // Bảng chi tiết: 2 cột khách sạn cho 1 kịch bản
+ function cmpHTML(d,si,pr){
+  const {L,M,G}=d,g=G[si],ro=pr||!!S.locked;
+  let t='<colgroup><col class="c-name"><col class="c-p"><col class="c-q"><col class="c-a"><col class="c-p"><col class="c-q"><col class="c-a"><col class="c-d"></colgroup>';
+  t+='<thead><tr class="cx-h1"><th rowspan="2">Đầu chi phí · '+g+' khách</th><th colspan="3" class="h-lotte">LOTTE SAIGON</th><th colspan="3" class="h-lm">LE MÉRIDIEN SAIGON</th><th rowspan="2" class="num">Chênh lệch<small>LM − Lotte</small></th></tr>';
+  t+='<tr class="cx-h2"><th class="num s-l">Đơn giá</th><th class="num">SL</th><th class="num">Thành tiền</th><th class="num s-l">Đơn giá</th><th class="num">SL</th><th class="num">Thành tiền</th></tr></thead><tbody>';
+  const grp=x=>'<tr class="cx-grp"><th colspan="8">'+x+'</th></tr>';
+  const noteHTML=(a,b)=>[a?'<small><b class="nl">L</b> '+esc(a)+'</small>':'',b?'<small><b class="nm">M</b> '+esc(b)+'</small>':''].join('');
+  const sub=(lab,a,b,cls)=>'<tr class="'+(cls||'cx-sub')+'"><td class="c-name">'+lab+'</td><td class="s-l"></td><td></td><td class="num">'+fmt(a)+'</td><td class="s-l"></td><td></td><td class="num">'+fmt(b)+'</td><td class="num">'+diff(a,b)+'</td></tr>';
+  // A · Ăn uống
+  t+=grp(GROUPS.A);
+  L.fnb.forEach((lr,i)=>{const mr=M.fnb[i];
+   const side=r=>{
+    if(r.price==null)return '<td class="num s-l muted" colspan="2">'+esc(r.info)+'</td><td class="num">'+fmt(r.amt[si])+'</td>';
+    const p=r.editH3&&!ro?'<input class="cx-in" id="cx-lm-h3" type="number" min="0" step="1000" value="'+r.price+'" aria-label="Đơn giá giờ thứ 3 Le Méridien"/>':fmt(r.price);
+    return '<td class="num s-l'+(r.off?' cx-off':'')+'">'+p+'</td><td class="num muted">× '+g+'</td><td class="num'+(r.off?' cx-off':'')+'">'+(r.off?'Không dùng':fmt(r.amt[si]))+'</td>';
+   };
+   const note=pr&&lr.price==null?'':noteHTML(lr.note,mr.note);
+   t+='<tr'+(lr.off?' class="cx-offrow"':'')+'><td class="c-name">'+esc(lr.name)+note+'</td>'+side(lr)+side(mr)+'<td class="num">'+diff(lr.amt[si],mr.amt[si])+'</td></tr>';
+  });
+  t+=sub('Cộng A · Ăn uống',L.subA[si],M.subA[si]);
+  // B, C
+  for(const gk of ['B','C']){
+   t+=grp(GROUPS[gk]);
+   L.items.forEach((lx,i)=>{if(lx.it.g!==gk)return;const mx=M.items[i];
+    const side=(h,x)=>{const {it,st}=x,c=x.cells[si];
+     if(it.t==='free')return '<td class="num s-l cx-free" colspan="3">Miễn phí</td>';
+     if(it.t==='cond'&&c.kind==='free')return '<td class="num s-l cx-free" colspan="3">Miễn phí<small>đạt ngưỡng '+g+' khách</small></td>';
+     if(ro)return st.on?'<td class="num s-l">'+fmt(x.price)+'<small>++ / '+esc(it.unit)+'</small></td><td class="num">'+(it.mode==='guest'?x.qty+' × '+g:x.qty+' '+esc(it.unit))+'</td><td class="num cx-'+c.kind+'">'+c.label+(st.status==='confirmed'?'<small class="ok">✓ Đã chốt</small>':'')+'</td>':'<td class="num s-l muted" colspan="3">Không dùng</td>';
+     return '<td class="num s-l'+(st.on?'':' cx-off')+'"><span class="cx-pin"><input type="checkbox" class="cx-on" data-h="'+h+'" data-k="'+it.k+'" '+(st.on?'checked':'')+' aria-label="Dùng '+esc(it.name)+' – '+(h==='lotte'?'Lotte':'Le Méridien')+'"/><input class="cx-in cx-price" data-h="'+h+'" data-k="'+it.k+'" type="number" min="0" step="1000" value="'+(Number(st.price)||0)+'" aria-label="Đơn giá"/></span><small>++ / '+esc(it.unit)+'</small></td>'+
+      '<td class="num'+(st.on?'':' cx-off')+'"><input class="cx-in cx-qty" data-h="'+h+'" data-k="'+it.k+'" type="number" min="0" step="1" value="'+(Number(st.qty)||0)+'" aria-label="Số lượng"/><small>'+(it.mode==='guest'?'× '+g+' khách':esc(it.unit))+'</small></td>'+
+      '<td class="num cx-'+c.kind+(st.status==='confirmed'?' cx-confirmed':'')+'">'+c.label+'<select class="cx-status" data-h="'+h+'" data-k="'+it.k+'" aria-label="Trạng thái">'+STATUS.map(([v,l])=>'<option value="'+v+'"'+(st.status===v?' selected':'')+'>'+l+'</option>').join('')+'</select></td>';
+    };
+    t+='<tr><td class="c-name">'+esc(lx.it.name)+(pr?'':noteHTML(lx.it.note,mx.it.note))+'</td>'+side('lotte',lx)+side('lm',mx)+'<td class="num">'+diff(lx.cells[si].amt,mx.cells[si].amt)+'</td></tr>';
+   });
+   t+=sub('Cộng '+gk,L['sub'+gk][si],M['sub'+gk][si]);
+  }
+  t+=sub('TỔNG CHI PHÍ · '+g+' khách',L.total[si],M.total[si],'cx-grand');
+  t+=sub('Bình quân / khách',L.total[si]/g,M.total[si]/g,'cx-avgrow');
+  if(Number(S.reserve)>0){t+=sub('Dự phòng phát sinh '+S.reserve+'%',L.reserve[si],M.reserve[si],'cx-avgrow');t+=sub('NGÂN SÁCH ĐỀ XUẤT · '+g+' khách',L.budget[si],M.budget[si],'cx-grand');}
+  return t+'</tbody>';
+ }
+ function notes(){
+  return [
+   'Giá cả hai khách sạn cộng phí phục vụ '+S.svc+'% trên mọi khoản. Bảng tính không bao gồm VAT.',
+   'Le Méridien: gói Festive = món ăn + đồ uống free flow 2 giờ '+fmt(S.lmDrink)+'/khách; giờ thứ 3: '+fmt(S.lmH3)+'/khách. Lotte: giờ thứ 3 = 50% giá gói đồ uống 2 giờ.',
+   'Ô “Miễn phí”: khách sạn không thu. LED Le Méridien miễn phí đến 3,375 × 7,2 m; mở rộng tối đa 12 × 3,375 m cộng thêm 20.000.000đ++.',
+   'Welcome Le Méridien chỉ miễn phí khi ≥150 khách hoặc doanh thu ăn uống ≥250 triệu++; chưa đạt thì tính phí (đang tạm tính 300.000đ++/khách, chờ báo giá).',
+   'Dự toán làm việc, chưa phải hợp đồng. Dữ liệu nhập lưu trên trình duyệt này.'
+  ];
+ }
+ function verdict(d){const {G,L,M}=d;
+  return G.map((g,i)=>{const x=M.budget[i]-L.budget[i];return '<b>'+g+' khách:</b> '+(x>0?'Lotte rẻ hơn '+fmt(x):x<0?'Le Méridien rẻ hơn '+fmt(-x):'bằng nhau')}).join(' · ');
+ }
+ function render(){
+  const d=compute();
+  $('cx-summary-table').innerHTML=summaryHTML(d);
+  $('cx-verdict').innerHTML=verdict(d);
+  if(!(S.view>=0&&S.view<3))S.view=0;
+  $('cx-view').innerHTML=d.G.map((g,i)=>'<button type="button" class="cx-seg-btn'+(i===S.view?' active':'')+'" data-view="'+i+'" aria-pressed="'+(i===S.view)+'">'+g+' khách</button>').join('');
+  $('cx-cmp').innerHTML=cmpHTML(d,S.view,false);
+  $('cx-notes-list').innerHTML=notes().map(n=>'<li>'+n+'</li>').join('');
+  applyLock();
+  document.querySelectorAll('.cp-menu-panel').forEach(p=>{p.hidden=Number(p.dataset.menuIndex)!==(p.dataset.cpMenu==='lotte'?S.lotteMenu:S.lmMenu)});
+  return d;
+ }
+ const KEEP=new Set(['cx-csv','cx-pdf','cx-orient','cx-pdf-scope','cx-g0','cx-g1','cx-g2','cx-reserve','cx-hours','cx-svc','cx-lotte-menu','cx-lotte-drink','cx-lm-menu']);
+ const OPEN_KEYS=['guests','reserve','hours','svc','lotteMenu','lotteDrink','lmMenu','view'];
+ function applyLock(){
+  const on=!!S.locked,panel=$('panel-compare');
+  panel.classList.toggle('cx-locked',on);
+  panel.querySelectorAll('input,select,button').forEach(el=>{if(KEEP.has(el.id)||el.closest('[data-view]')||el.closest('.cx-menu'))return;el.disabled=on});
+ }
+ function syncControls(){
+  S.guests.forEach((g,i)=>$('cx-g'+i).value=g);
+  $('cx-hours').value=S.hours;$('cx-reserve').value=S.reserve;$('cx-svc').value=S.svc;
+  $('cx-lotte-menu').value=S.lotteMenu;$('cx-lotte-drink').value=S.lotteDrink;$('cx-lm-menu').value=S.lmMenu;
+ }
+
+ // ===== Sự kiện =====
+ [0,1,2].forEach(i=>$('cx-g'+i).addEventListener('change',e=>{S.guests[i]=Math.max(1,Math.floor(Number(e.target.value)||1));e.target.value=S.guests[i];render();save()}));
+ [['cx-reserve','reserve'],['cx-hours','hours'],['cx-svc','svc'],['cx-lotte-menu','lotteMenu'],['cx-lotte-drink','lotteDrink'],['cx-lm-menu','lmMenu']].forEach(([id,k])=>$(id).addEventListener('change',e=>{S[k]=Number(e.target.value);render();save()}));
+ const panel=$('panel-compare');
+ panel.addEventListener('click',e=>{const b=e.target.closest('[data-view]');if(!b)return;S.view=Number(b.dataset.view);render();save()});
+ panel.addEventListener('change',e=>{const t=e.target;
+  if(t.id==='cx-lm-h3'){S.lmH3=Math.max(0,Number(t.value)||0);render();save();return}
+  const h=t.dataset.h,k=t.dataset.k;if(!h||!k)return;const st=S.items[h+':'+k];if(!st)return;
+  if(t.classList.contains('cx-on'))st.on=t.checked;
+  else if(t.classList.contains('cx-price'))st.price=Math.max(0,Number(t.value)||0);
+  else if(t.classList.contains('cx-qty')){st.qty=Math.max(0,Number(t.value)||0);if(st.qty>0)st.on=true}
+  else if(t.classList.contains('cx-status')){st.status=t.value;if(t.value==='confirmed')st.on=true}
+  render();save();
  });
- restore();calc();
+ $('cx-lock')&&$('cx-lock').addEventListener('click',()=>{
+  if(S.locked&&!confirm('Mở khóa để chỉnh sửa số liệu?'))return;
+  S.locked=!S.locked;render();save();
+ });
+ $('cx-export-json')&&$('cx-export-json').addEventListener('click',()=>{
+  const blob=new Blob([JSON.stringify(S,null,1)],{type:'application/json'});const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='so_lieu_chot_YEP.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+ });
+ $('cx-import-json')&&$('cx-import-json').addEventListener('change',e=>{const f=e.target.files[0];if(!f||S.locked)return;
+  f.text().then(txt=>{try{const d=JSON.parse(txt);S=Object.assign(JSON.parse(JSON.stringify(DEFAULTS)),d);syncControls();render();save()}catch(_){alert('File số liệu không hợp lệ.')}});e.target.value='';
+ });
+ $('cx-reset')&&$('cx-reset').addEventListener('click',()=>{if(S.locked)return;if(!confirm('Khôi phục toàn bộ số liệu mặc định?'))return;S=JSON.parse(JSON.stringify(DEFAULTS));syncControls();render();save()});
+
+ // ===== CSV =====
+ $('cx-csv').addEventListener('click',()=>{const d=compute(),G=d.G;
+  const rows=[['Kịch bản','Nhóm','Đầu chi phí','Lotte · đơn giá','Lotte · SL','Lotte · thành tiền','Le Méridien · đơn giá','Le Méridien · SL','Le Méridien · thành tiền','Chênh lệch LM − Lotte']];
+  const val=(x,i)=>x.it.t==='free'?['Miễn phí','','0']:!x.st.on?['','','Không dùng']:[x.price,x.it.mode==='guest'?x.qty+' × '+G[i]:x.qty,Math.round(x.cells[i].amt)];
+  G.forEach((g,i)=>{const sc=g+' khách';
+   d.L.fnb.forEach((r,j)=>{const m=d.M.fnb[j];rows.push([sc,'A',r.name,r.price??r.info,r.price==null?'':'× '+g,Math.round(r.amt[i]),m.price??m.info,m.price==null?'':'× '+g,Math.round(m.amt[i]),Math.round(m.amt[i]-r.amt[i])])});
+   d.L.items.forEach((x,j)=>{const y=d.M.items[j];rows.push([sc,x.it.g,x.it.name,...val(x,i),...val(y,i),Math.round(y.cells[i].amt-x.cells[i].amt)])});
+   rows.push([sc,'','TỔNG','','',Math.round(d.L.total[i]),'','',Math.round(d.M.total[i]),Math.round(d.M.total[i]-d.L.total[i])]);
+  });
+  const csv='﻿'+rows.map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(',')).join('\r\n');
+  const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='SVI_YEP_Lotte_LeMeridien_ChiPhi.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+ });
+
+ // ===== PDF A4 dọc / ngang (hộp thoại in → Lưu dưới dạng PDF) =====
+ $('cx-pdf').addEventListener('click',()=>{
+  const d=compute(),orient=$('cx-orient').value,land=orient==='landscape';
+  const fs=land?'8pt':'7.6pt';
+  const css='@page{size:A4 '+orient+';margin:'+(land?'8mm 11mm':'11mm 10mm')+'}*{box-sizing:border-box}body{font-family:"Segoe UI",Arial,sans-serif;color:#17233d;font-size:8.4pt;margin:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'h1{font-size:14pt;margin:0 0 2px;color:#12305f}.meta{color:#5b6a80;font-size:7.6pt;margin-bottom:5px}.assume{border:1px solid #dfe6ef;background:#f6f8fc;border-radius:4px;padding:4px 8px;font-size:7.8pt;line-height:1.45;margin-bottom:4px}'+
+   'h2{font-size:10.5pt;margin:8px 0 4px;padding:4px 8px;color:#fff;background:#b66a1f;border-radius:4px;break-after:avoid}h2 span{font-weight:400;font-size:7.8pt}.pb{break-before:page}'+
+   'table{width:100%;border-collapse:collapse;table-layout:fixed;margin-bottom:4px}thead{display:table-header-group}tr{break-inside:avoid}'+
+   'th,td{border-bottom:1px solid #e3e8ef;padding:2.4px 4px;text-align:left;vertical-align:top;font-size:'+fs+'}thead th{background:#e9eef7;font-weight:700;border-bottom:1.5px solid #9fb0c8}'+
+   '.num{text-align:right;white-space:nowrap}th small{display:block;font-weight:400;font-size:6.6pt;color:#6b778a}td.c-name small{display:inline;margin-left:4px;font-size:6.4pt;color:#6b778a}td.num small{display:none}'+
+   '.h-lotte{background:#193d7b!important;color:#fff;text-align:center!important}.h-lm{background:#227b78!important;color:#fff;text-align:center!important}.s-l{border-left:1.5px solid #b9c7da}'+
+   'col.s-name{width:40%}col.s-v{width:20%}col.c-name{width:24%}col.c-p{width:11%}col.c-q{width:6%}col.c-a{width:14%}col.c-d{width:14%}'+
+   '.cx-scen th{background:#fff3e3;color:#7a4510;font-weight:800}.cx-grp th{background:#f2f5fa;color:#2a466e;font-size:7.2pt;letter-spacing:.03em;text-transform:uppercase}'+
+   '.cx-total td{background:#eef4fb}.cx-avg td,.cx-avgrow td{color:#56657b}.cx-sub td{font-weight:700;background:#fafbfd}.cx-grand td{font-weight:800;background:#e7f3ec;color:#124a2d;border-top:1.5px solid #7fb394}'+
+   '.cx-up{color:#b23a2a}.cx-down{color:#137a43}.cx-free{color:#137a43;font-weight:700}.cx-off,.muted{color:#8a95a5}.cx-unpriced{color:#a35a00;font-style:italic}.ok{color:#137a43}'+
+   '.nl,.nm{display:inline-block;font-size:5.8pt;color:#fff;border-radius:2px;padding:0 3px;margin-right:2px}.nl{background:#193d7b}.nm{background:#227b78}'+
+   'ul{margin:3px 0 0 16px;padding:0}li{margin:1px 0;line-height:1.35;font-size:7.6pt}.verdict{font-size:8pt;margin:3px 0;line-height:1.45}'+
+   (land?'.p1{display:grid;grid-template-columns:1.25fr 1fr;gap:12px;align-items:start}':'');
+  const assume='Đồ uống: <b>'+S.hours+' giờ</b> · Lotte: <b>'+LOTTE_MENUS[S.lotteMenu].name+'</b> + '+LOTTE_DRINKS[S.lotteDrink].name+' · Le Méridien: <b>Gói '+LM_PKGS[S.lmMenu].name+'</b> · Phí phục vụ '+S.svc+'% · Không gồm VAT.';
+  const scope=$('cx-pdf-scope').value==='all'?[0,1,2]:[S.view];
+  const html='<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"><title>SVI YEP – So sánh chi phí Lotte & Le Méridien</title><style>'+css+'</style></head><body>'+
+   '<h1>SVI YEP 2026–2027 · So sánh chi phí Lotte Saigon &amp; Le Méridien</h1><div class="meta">'+'Số liệu chốt'+' · xuất ngày '+new Date().toLocaleDateString('vi-VN')+'</div><div class="assume">'+assume+'</div>'+
+   '<div class="p1"><div><h2>1 · TỔNG CHI PHÍ DỰ TRÙ THEO SỐ KHÁCH</h2><table>'+summaryHTML(d)+'</table></div><div><h2>KẾT LUẬN NHANH</h2><div class="verdict">'+verdict(d)+'</div><h2>LƯU Ý</h2><ul>'+notes().map(n=>'<li>'+n+'</li>').join('')+'</ul></div></div>'+
+   scope.map((si,n)=>'<div class="pb"></div><h2>'+(2+n)+' · ĐỐI CHIẾU CHI TIẾT · '+d.G[si]+' KHÁCH</h2><table>'+cmpHTML(d,si,true)+'</table>').join('')+
+   '</body></html>';
+  let f=document.getElementById('cx-print-frame');if(f)f.remove();
+  f=document.createElement('iframe');f.id='cx-print-frame';f.setAttribute('aria-hidden','true');f.style.cssText='position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden';
+  document.body.appendChild(f);const doc=f.contentWindow.document;doc.open();doc.write(html);doc.close();
+  setTimeout(()=>{f.contentWindow.focus();f.contentWindow.print()},250);
+ });
+
+ load();syncControls();render();
 })();
