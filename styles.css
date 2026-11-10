@@ -102,3 +102,75 @@
 .lm-menu-page figcaption{text-align:center;color:#667892;padding:8px;font-size:12px}
 .lm-menu-page a{display:block;cursor:zoom-in}
 @media print {.lm-pages{grid-template-columns:repeat(2,1fr)}.lm-menu-page{break-inside:avoid}}
+
+/* 04 · Two-hotel scenario comparison */
+#tab-compare{background:#fff0dd;color:#865018;border-color:#edc997}
+#tab-compare.active{background:#b66a1f;color:#fff;border-color:#b66a1f;box-shadow:0 3px 12px #b66a1f35}
+.compare-alert{border:1px solid #eed5ac;background:#fff8e9;border-radius:12px;padding:14px 17px;color:#644e2e;font-size:13px;line-height:1.65;margin-bottom:17px}
+.compare-topbar{display:flex;gap:12px;align-items:end;flex-wrap:wrap;background:#fff;padding:14px 16px;border:1px solid #dbe3ee;border-radius:12px;margin-bottom:16px}
+.compare-topbar label,.compare-fields label{display:flex;flex-direction:column;gap:7px;font-size:12px;color:#415572;font-weight:750}
+.compare-topbar input,.compare-topbar select,.compare-fields select,.compare-fields input{min-height:40px;min-width:0;border:1px solid #ccd8e8;background:#fff;border-radius:8px;padding:9px 11px;color:#1e3358;font:inherit;font-size:14px}
+.compare-topbar input{width:115px}.compare-topbar button{border:1px solid #cbd8ec;background:#edf3fd;color:#214979;border-radius:8px;padding:11px 14px;cursor:pointer;font-weight:750}
+.compare-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-bottom:18px}
+.compare-hotel{border:1px solid #d9e2ee;background:#fff;border-radius:14px;overflow:hidden}
+.compare-hotel-head{color:#fff;padding:17px 20px}
+.compare-hotel-head.lotte{background:#193d7b}.compare-hotel-head.meridien{background:#227b78}
+.compare-hotel-head h3{margin:0 0 6px;font-size:18px;color:#fff}.compare-hotel-head p{margin:0;opacity:.85;font-size:13px}
+.compare-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;padding:18px}
+.compare-fields label:first-child{grid-column:1/-1}.compare-fields select,.compare-fields input{width:100%}
+.compare-hint{margin:0;padding:0 18px 19px;color:#62718a;font-size:12px;line-height:1.65}
+.compare-result{background:#fff;border:1px solid #dae4f0;border-radius:14px;padding:16px 18px 19px}
+.compare-result-head h3{margin:0;color:#173869}.compare-result-head p{margin:7px 0 15px;font-size:12px;color:#64738c}
+.compare-table-scroll{overflow-x:auto}.compare-table{width:100%;border-collapse:collapse;min-width:550px;font-size:14px}
+.compare-table th,.compare-table td{padding:14px 12px;border-bottom:1px solid #e7edf6;text-align:left}
+.compare-table td{font-weight:700;color:#183f72}.compare-table thead th{background:#eef3fc;color:#18365f}
+.compare-table tr.compare-subtotal{background:#f1f7ff}.compare-table tr.compare-subtotal td{font-size:17px}
+.compare-table tr.compare-group th{background:#dfe9f8;color:#12345f;font-size:13px;letter-spacing:.04em;text-transform:uppercase;font-weight:800}
+.compare-table tr.compare-grandtotal{background:#e8f3ec}.compare-table tr.compare-grandtotal th,.compare-table tr.compare-grandtotal td{font-size:17px;font-weight:800;color:#134a2d}
+
+.compare-benefits{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:18px}
+.compare-benefits>div{border:1px solid #e1e8f0;border-radius:9px;background:#f8faff;padding:14px}
+.compare-benefits strong{color:#24446f}.compare-benefits p{color:#52637d;line-height:1.65;font-size:13px;margin:7px 0 0}
+.compare-caveat{color:#708096;font-size:12px;line-height:1.65;margin:13px 2px}
+@media(max-width:800px){.compare-grid,.compare-benefits{grid-template-columns:1fr}.compare-fields{grid-template-columns:1fr}.compare-fields label:first-child{grid-column:auto}}
+@media print{.compare-topbar button{display:none}}
+
+/* Set-menu immediate previews inside comparison cards */
+.cp-menu-preview{margin:0 18px 19px;padding-top:12px;border-top:1px solid #e5ecf6}
+.cp-menu-preview>h4{color:#234572;font-size:13px;margin:4px 0 12px;letter-spacing:.035em}
+.cp-menu-panel[hidden]{display:none!important}
+.cp-menu-panel{border:1px solid #dce6f1;border-radius:12px;padding:14px;background:#f8fbff;max-height:520px;overflow:auto}
+.cp-menu-panel>h5{font-size:15px;margin:0 0 10px;color:#183d70}
+.cp-menu-panel .lotte-dishes{padding:0 6px 0 2px}
+.cp-menu-panel .lotte-menu-subheading{font-size:12px;margin:12px 0 5px}
+.cp-menu-panel .lotte-dish-list{margin:0 0 9px;padding-left:20px}
+.cp-menu-panel .lotte-dish-list li{font-size:12.5px;line-height:1.5}
+.cp-menu-page{display:block;width:100%;max-width:720px;height:auto;margin:0 auto 10px;border:1px solid #e3e9f0;background:white}
+.compare-fields label:first-child{grid-column:1/-1}
+.compare-alert{font-size:13px}
+@media(max-width:900px){.cp-menu-panel{max-height:470px}}
+
+/* Itemized controllable event costs */
+.cp-bilingual-note{font-size:12px;line-height:1.5;color:#5e7291;margin:8px 0 12px}
+.cp-lm-dishes .lotte-menu-subheading{font-size:13px;margin:15px 0 7px}
+.cp-lm-dishes .lotte-dish-list li{font-size:12.5px;line-height:1.65;padding:5px 0;border-bottom:1px dashed #e2eaf2}
+.cp-cost-catalog{border-top:1px solid #e1e8f0;padding:14px 16px 18px;background:#fbfcff}
+.cp-cost-catalog h4{font-size:13px;color:#24446b;letter-spacing:.035em;margin:1px 0 8px}
+.cp-cost-note{font-size:12px;color:#65748c;line-height:1.55;margin:0 0 13px}
+.cp-cost-scroll{overflow-x:auto;max-height:420px;overflow-y:auto;border:1px solid #e0e8f2;border-radius:9px;background:white}
+.cp-cost-table{width:100%;border-collapse:collapse;min-width:770px;font-size:11.5px}
+.cp-cost-table th,.cp-cost-table td{padding:9px 7px;border-bottom:1px solid #e8edf4;text-align:left;vertical-align:middle}
+.cp-cost-table th{position:sticky;top:0;background:#e8eef9;z-index:2;color:#244367}
+.cp-cost-table th:first-child{min-width:190px}.cp-cost-table td:nth-child(2){width:75px}.cp-cost-table td:nth-child(3){width:116px}
+.cp-cost-table td:nth-child(4){width:45px}.cp-cost-table td:nth-child(5){min-width:115px;font-weight:700;color:#1c4d83}
+.cp-cost-table input{width:100%;min-width:60px;padding:8px 5px;border:1px solid #cad8e8;border-radius:5px;background:white;font-size:12px}
+.cp-extra-note{color:#6a778c;line-height:1.45;min-width:240px}
+.cp-cost-subtotal{font-size:13px;color:#2d456d;margin:11px 2px 0}
+.cp-cost-subtotal strong{color:#123e80;font-size:15px}
+
+/* Matching input structure in hotel comparison cards */
+.cp-uniform-fields{grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;}
+.cp-uniform-fields label{min-width:0;justify-content:stretch;}
+.cp-uniform-fields .cp-input-title{min-height:1.5em;}
+.cp-form-explainer{background:#f4f7fc;border:1px solid #e1e8f2;border-radius:8px;margin:0 18px 12px;padding:10px 12px;font-size:12px;line-height:1.55;color:#455b79;}
+@media(max-width:800px){.cp-uniform-fields{grid-template-columns:1fr;}}
