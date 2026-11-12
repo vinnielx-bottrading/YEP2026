@@ -9,7 +9,7 @@ let visible=[];
 function render(){const q=document.getElementById('search').value.trim().toLowerCase();const group=select.value;const priced=document.getElementById('onlyprice').checked;visible=rows.filter(r=>(!group||r.group===group)&&(!priced||r.values.some(v=>/\d[.,]\d{3}\s*đ|\d{3}\.000đ|\d+%/.test(v)))&&(!q||[r.label,r.group,r.note,...r.values,...Object.values(r.notes)].join(' ').toLowerCase().includes(q)));let prev='';let html='';visible.forEach(r=>{if(r.group!==prev){prev=r.group;html+=`<tr class="group-row"><th colspan="6">${esc(prev)}</th></tr>`;}html+=`<tr><th scope="row">${esc(r.label)}${r.note?'<div class="note">'+esc(r.note)+'</div>':''}</th>`;r.values.forEach((v,i)=>{html+='<td>'+(v?'<div class="val">'+esc(v)+'</div>':'<div class="empty"></div>')+(r.notes[i]?'<div class="note">'+esc(r.notes[i])+'</div>':'')+'</td>'});html+='</tr>'});document.getElementById('body').innerHTML=html||'<tr><td colspan="6" style="padding:34px;text-align:center" class="muted">Không tìm thấy hạng mục phù hợp.</td></tr>';document.getElementById('counter').textContent=visible.length+' / '+rows.length+' hạng mục';}
 ['search','group','onlyprice'].forEach(id=>document.getElementById(id).addEventListener(id==='search'?'input':'change',render));
 document.getElementById('reset').addEventListener('click',()=>{document.getElementById('search').value='';select.value='';document.getElementById('onlyprice').checked=false;render()});
-document.getElementById('csv').addEventListener('click',()=>{const headers=['Nhóm','Hạng mục','Lotte Saigon','Le Méridien','Hilton Saigon','Sheraton Saigon','GEM Center','Ghi chú chung'];const lines=[headers,...visible.map(r=>[r.group,r.label,...r.values.map((v,i)=>v+(r.notes[i]?' | Ghi chú: '+r.notes[i]:'')),r.note])];const blob=new Blob(['\ufeff'+lines.map(a=>a.map(x=>'"'+String(x??'').replace(/"/g,'""')+'"').join(',')).join('\r\n')],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='YEP_SVI_So_Sanh_Bao_Gia.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)});
+
 document.getElementById('print').addEventListener('click',()=>window.print());render();
 
 // Separate quote and photo panels without external dependencies.
@@ -218,7 +218,7 @@ document.querySelectorAll('[data-filter-menu]').forEach(button=>button.addEventL
   document.querySelectorAll('.cp-menu-panel').forEach(p=>{p.hidden=Number(p.dataset.menuIndex)!==(p.dataset.cpMenu==='lotte'?S.lotteMenu:S.lmMenu)});
   return d;
  }
- const KEEP=new Set(['cx-csv','cx-pdf','cx-orient','cx-pdf-scope','cx-g0','cx-g1','cx-g2','cx-reserve','cx-hours','cx-svc','cx-lotte-menu','cx-lotte-drink','cx-lm-menu']);
+ const KEEP=new Set(['cx-pdf','cx-orient','cx-pdf-scope','cx-g0','cx-g1','cx-g2','cx-reserve','cx-hours','cx-svc','cx-lotte-menu','cx-lotte-drink','cx-lm-menu']);
  const OPEN_KEYS=['guests','reserve','hours','svc','lotteMenu','lotteDrink','lmMenu','view'];
  function applyLock(){
   const on=!!S.locked,panel=$('panel-compare');
@@ -258,18 +258,7 @@ document.querySelectorAll('[data-filter-menu]').forEach(button=>button.addEventL
  });
  $('cx-reset')&&$('cx-reset').addEventListener('click',()=>{if(S.locked)return;if(!confirm('Khôi phục toàn bộ số liệu mặc định?'))return;S=JSON.parse(JSON.stringify(DEFAULTS));syncControls();render();save()});
 
- // ===== CSV =====
- $('cx-csv').addEventListener('click',()=>{const d=compute(),G=d.G;
-  const rows=[['Kịch bản','Nhóm','Đầu chi phí','Lotte · đơn giá','Lotte · SL','Lotte · thành tiền','Le Méridien · đơn giá','Le Méridien · SL','Le Méridien · thành tiền','Chênh lệch LM − Lotte']];
-  const val=(x,i)=>x.it.t==='free'?['Miễn phí','','0']:!x.st.on?['','','Không dùng']:[x.price,x.it.mode==='guest'?x.qty+' × '+G[i]:x.qty,Math.round(x.cells[i].amt)];
-  G.forEach((g,i)=>{const sc=g+' khách';
-   d.L.fnb.forEach((r,j)=>{const m=d.M.fnb[j];rows.push([sc,'A',r.name,r.price??r.info,r.price==null?'':'× '+g,Math.round(r.amt[i]),m.price??m.info,m.price==null?'':'× '+g,Math.round(m.amt[i]),Math.round(m.amt[i]-r.amt[i])])});
-   d.L.items.forEach((x,j)=>{const y=d.M.items[j];rows.push([sc,x.it.g,x.it.name,...val(x,i),...val(y,i),Math.round(y.cells[i].amt-x.cells[i].amt)])});
-   rows.push([sc,'','TỔNG','','',Math.round(d.L.total[i]),'','',Math.round(d.M.total[i]),Math.round(d.M.total[i]-d.L.total[i])]);
-  });
-  const csv='﻿'+rows.map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(',')).join('\r\n');
-  const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='SVI_YEP_Lotte_LeMeridien_ChiPhi.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
- });
+
 
  // ===== PDF A4 dọc / ngang (hộp thoại in → Lưu dưới dạng PDF) =====
  $('cx-pdf').addEventListener('click',()=>{
