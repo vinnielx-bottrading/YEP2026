@@ -38,7 +38,7 @@ Tab THỰC ĐƠN đã bổ sung 3 Asian Set (Standard/Premium/Deluxe), 5 Buffet 
 
 ## Tab thứ 4: SO SÁNH CHI PHÍ (Lotte Saigon · Le Méridien)
 
-- **Thanh công cụ:** 3 kịch bản số khách (mặc định 120 / 140 / 150), 2 hoặc 3 giờ đồ uống, phí phục vụ chung cho cả hai khách sạn (mặc định 5%); bảng tính không bao gồm VAT, Khôi phục mặc định, Xuất CSV, Xuất PDF (A4 dọc/ngang; chi tiết kịch bản đang xem hoặc cả 3).
+- **Thanh công cụ:** 3 kịch bản số khách (mặc định 120 / 140 / 150), 2 hoặc 3 giờ đồ uống, phí phục vụ chung cho cả hai khách sạn (mặc định 5%), Khôi phục mặc định, Xuất CSV, Xuất PDF (A4 dọc/ngang; chi tiết kịch bản đang xem hoặc cả 3).
 - **1 · Tổng chi phí dự trù:** Lotte | Le Méridien | Chênh lệch cho từng kịch bản, chia A · Ăn uống, B · LED/âm thanh/kỹ thuật, C · Welcome drink, D · Đồ uống mang vào & mua thêm, E · Vận hành, tổng và bình quân/khách.
 - **2 · Bảng đối chiếu chi tiết:** cùng hàng đầu chi phí, mỗi khách sạn một cột (Đơn giá · SL · Thành tiền). Ô “Miễn phí” = khách sạn không thu.
 - **Ăn uống:** Lotte Set A/B/C 1.200.000 / 1.300.000 / 1.400.000đ++; đồ uống 2 giờ 250.000 / 450.000 / 600.000đ++; giờ thứ 3 = 50% gói 2 giờ. Le Méridien gói Festive Standard/Premium/Deluxe 1.550.000 / 1.750.000 / 2.000.000đ++ = món ăn + đồ uống free flow 2 giờ 450.000đ++; giờ thứ 3 250.000đ++.
@@ -48,14 +48,15 @@ Tab THỰC ĐƠN đã bổ sung 3 Asian Set (Standard/Premium/Deluxe), 5 Buffet 
 
 ## Tab thứ 5: GEM CENTER (địa điểm sự kiện, 11/2026)
 
-- Nguồn: báo giá sự kiện GEM Center cho VPS Global ngày 29/01/2027 (150 khách bảo đảm, hiệu lực đến 18/11/2026, waiting list) và Set Menu 2026. Giá ++ = +5% phí phục vụ rồi 10% VAT (hệ số 1,155); giá nett không cộng thêm.
+- Nguồn: báo giá sự kiện GEM Center cho VPS Global ngày 29/01/2027 (150 khách bảo đảm, hiệu lực đến 18/11/2026, waiting list) và Set Menu 2026. Giá ++ = +5% phí phục vụ (hệ số 1,05); giá nett không cộng thêm.
 - Tab 1 có thêm cột GEM Center và 9 hạng mục mới (đồ uống 2,5 giờ, module sân khấu, máy chiếu, máy lạnh setup, vệ sinh kim tuyến, dọn hoa, quá giờ). Dữ liệu 4 khách sạn giữ nguyên.
 - Tab Thực đơn có thẻ GEM Center với 6 Set Menu dạng chữ; tab Hình ảnh có ô "Chưa có hình minh họa". PDF menu GEM chưa có trong `menus/`.
 - Tab GEM CENTER (`gem.js`, lưu `svi-yep-gem-v1`): chọn sảnh ERA / Castor 4, 6 Set Menu, 3 gói đồ uống, 3 kịch bản số khách, số khách bảo đảm (tính tiền theo max(số khách, bảo đảm)). Ba nhóm: Set Menu & Đồ uống, LED, Các chi phí khác; mỗi khoản có tích chọn, đơn giá, ++/nett, SL, trạng thái (Dự tính / Đã chốt nội bộ / Chờ báo giá / Nhà cung cấp xác nhận), nguồn, ghi chú; gửi xe chọn SVI hoặc khách tự trả. Sửa khoản đã chốt sẽ tự chuyển về "Dự tính". Xuất JSON, CSV, PDF A4.
-- Kiểm thử: `python3 tests/gem_test.py` (cần Playwright) — đối chiếu ERA 344.016.750đ, Castor 466.793.250đ, chênh 122.776.500đ, Menu 03 376.068.000đ, Menu 05 417.648.000đ, gửi xe nett, tắt khoản, khoản chưa giá, bảo đảm 150.
+- Kiểm thử: `python3 tests/gem_test.py` (cần Playwright) — đối chiếu ERA 312.742.500đ, Castor 424.357.500đ, chênh 111.615.000đ, Menu 03 341.880.000đ, Menu 05 379.680.000đ, gửi xe nett, tắt khoản, khoản chưa giá, bảo đảm 150.
 
 ### Cập nhật 11/11/2026 (chiều)
 - Tab Hình ảnh: thêm 6 ảnh GEM Center (`assets/venues/gem-01…06.webp`); trình bày lại theo khối địa điểm, lọc theo địa điểm, chọn cỡ lưới, bấm ảnh xem lớn (phím ← → / Esc).
 - Tab Thực đơn: thêm "bảng giá nhanh" 5 địa điểm, lọc theo địa điểm, Mở/Thu gọn tất cả; ảnh trang menu mở trong khung xem lớn.
 - Tab GEM CENTER: số lượng mặc định đồng bộ với Lotte/Le Méridien (LED 24 m², 4 micro, vang 5 chai, corkage vang 2 / rượu mạnh 6 chai, 80 xe máy, 50 ô tô, welcome & giờ thêm theo số khách — chưa có giá GEM). Kịch bản 120/140/150. Khóa lưu đổi sang `svi-yep-gem-v2`.
-- (18:00) Tab GEM CENTER chuyển sang dự toán chốt: bỏ các khoản chưa có báo giá và khoản không dùng; bảng chi tiết hiển thị số cố định (không ô nhập), vẫn chọn được sảnh, Set Menu, gói đồ uống, số khách. Tổng mặc định (ERA, Menu 01, Heineken): 406.510.500đ.
+- (18:00) Tab GEM CENTER chuyển sang dự toán chốt: bỏ các khoản chưa có báo giá và khoản không dùng; bảng chi tiết hiển thị số cố định (không ô nhập), vẫn chọn được sảnh, Set Menu, gói đồ uống, số khách. Tổng mặc định (ERA, Menu 01, Heineken): 369.855.000đ.
+
