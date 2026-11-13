@@ -38,7 +38,7 @@ Tab THỰC ĐƠN đã bổ sung 3 Asian Set (Standard/Premium/Deluxe), 5 Buffet 
 
 ## Tab thứ 4: SO SÁNH CHI PHÍ (Lotte Saigon · Le Méridien)
 
-- **Thanh công cụ:** 3 kịch bản số khách (mặc định 120 / 140 / 150), 2 hoặc 3 giờ đồ uống, Khôi phục mặc định, Xuất PDF (A4 dọc/ngang; chi tiết kịch bản đang xem hoặc cả 3).
+- **Thanh công cụ:** 3 kịch bản số khách (mặc định 120 / 140 / 150), đồ uống cố định 3 giờ (free flow giờ thứ 3 luôn tính để không hụt ngân sách), Khôi phục mặc định, Xuất PDF (A4 dọc/ngang; chi tiết kịch bản đang xem hoặc cả 3).
 - **1 · Tổng chi phí dự trù:** Lotte | Le Méridien | Chênh lệch cho từng kịch bản, chia A · Ăn uống, B · LED/âm thanh/kỹ thuật, C · Welcome drink, D · Đồ uống mang vào & mua thêm, E · Vận hành, tổng và bình quân/khách.
 - **2 · Bảng đối chiếu chi tiết:** cùng hàng đầu chi phí, mỗi khách sạn một cột (Đơn giá · SL · Thành tiền). Ô “Miễn phí” = khách sạn không thu.
 - **Ăn uống:** Lotte Set A/B/C 1.200.000 / 1.300.000 / 1.400.000đ++; đồ uống 2 giờ 250.000 / 450.000 / 600.000đ++; giờ thứ 3 = 50% gói 2 giờ. Le Méridien gói Festive Standard/Premium/Deluxe 1.550.000 / 1.750.000 / 2.000.000đ++ = món ăn + đồ uống free flow 2 giờ 450.000đ++; giờ thứ 3 250.000đ++.
@@ -64,3 +64,5 @@ Tab THỰC ĐƠN đã bổ sung 3 Asian Set (Standard/Premium/Deluxe), 5 Buffet 
 ### Cập nhật 13/11/2026
 - Tab So sánh và tab GEM tính đúng đơn giá × số lượng theo báo giá, chưa bao gồm 5% phí phục vụ (PDF ghi rõ). Bỏ ô chọn phí phục vụ.
 - Le Méridien thêm khoản LED mở rộng 12 × 3,375 m: 20.000.000đ.
+- Đồ uống luôn tính free flow 3 giờ (Lotte giờ 3 = 50% gói 2 giờ; Le Méridien 250.000đ/khách); bỏ ô chọn số giờ. Kiểm thử `python3 tests/compare_test.py`: 81 tổ hợp menu × số khách, tổng = cộng chi tiết = công thức tính tay.
+- Le Méridien: welcome miễn phí khi ≥150 khách hoặc tổng chi tiêu tại khách sạn ≥250 triệu (ăn uống + LED mở rộng + vang + corkage; không tính welcome) — theo thương lượng 13/11/2026.
