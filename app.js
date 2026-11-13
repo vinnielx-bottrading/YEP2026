@@ -53,7 +53,10 @@ document.querySelectorAll('[data-filter-menu]').forEach(button=>button.addEventL
  const CATALOG=[
   {k:'led',g:'B',name:'Màn hình LED sân khấu',
    lotte:{done:true,t:'priced',unit:'m²',price:1200000,qty:24,on:true,note:'Thuê 1.200.000đ/m²/ngày, tối thiểu 10 m².'},
-   lm:{t:'free',note:'Miễn phí LED P1.5 rộng đến 7,2 m (3,375 × 7,2 m). Mở rộng tối đa 12 m (12 × 3,375 m): cộng thêm 20.000.000đ++.'}},
+   lm:{t:'free',note:'Miễn phí LED P1.5 rộng đến 7,2 m (3,375 × 7,2 m); phần mở rộng lên 12 m tính ở dòng dưới.'}},
+  {k:'ledx',g:'B',name:'LED mở rộng 12 × 3,375 m',
+   lotte:{t:'priced',unit:'gói',price:0,qty:0,on:false,note:'Lotte không mở rộng; LED tính ở dòng trên.'},
+   lm:{t:'priced',unit:'gói',price:20000000,qty:1,on:true,done:true,note:'Mở rộng LED P1.5 từ 7,2 m lên 12 m ngang theo báo giá.'}},
   {k:'micro',g:'B',name:'Âm thanh & micro',
    lotte:{done:true,t:'priced',unit:'micro',price:1000000,qty:4,on:true,note:'Âm thanh miễn phí; micro 1.000.000đ++/micro/ngày.'},
    lm:{t:'free',note:'Âm thanh miễn phí, gồm 4 micro.'}},
@@ -85,7 +88,7 @@ document.querySelectorAll('[data-filter-menu]').forEach(button=>button.addEventL
  const EXTRA=['B','C','D','E'];
  const STATUS=[['draft','Dự tính'],['confirmed','Đã chốt']];
 
- const DEFAULTS={guests:[120,140,150],hours:3,svc:5,lmDrink:450000,lotteMenu:2,lotteDrink:2,lmMenu:0,lmH3:250000,reserve:0,view:0,locked:false,items:{}};
+ const DEFAULTS={guests:[120,140,150],hours:3,svc:0,lmDrink:450000,lotteMenu:2,lotteDrink:2,lmMenu:0,lmH3:250000,reserve:0,view:0,locked:false,items:{}};
  let S=JSON.parse(JSON.stringify(DEFAULTS));
  function itemState(h,it){const key=h+':'+it.k;if(!S.items[key])S.items[key]={on:it.on,price:it.price,qty:it.qty,status:it.done?'confirmed':'draft'};const st=S.items[key];if(st.status==='pending')st.status='draft';return st}
  function load(){S=JSON.parse(JSON.stringify(DEFAULTS));S.locked=true;try{const d=JSON.parse(localStorage.getItem(STORE_KEY)||'null');if(d)OPEN_KEYS.forEach(k=>{if(d[k]!=null)S[k]=d[k]})}catch(_){}}
@@ -94,8 +97,8 @@ document.querySelectorAll('[data-filter-menu]').forEach(button=>button.addEventL
  // ===== Tính toán =====
  function compute(){
   const G=S.guests.map(g=>Math.max(1,Math.floor(Number(g)||1)));
-  const h3=Number(S.hours)===3, svc=S.svc/100, mult=1+svc;
-  const taxRows=(pre)=>[{name:'Phí phục vụ',info:S.svc+'% trên tiền ăn uống',amt:pre.map(p=>p*svc)}];
+  S.svc=0;const h3=Number(S.hours)===3, svc=0, mult=1;
+  const taxRows=(pre)=>[];
   // Lotte
   const lm=LOTTE_MENUS[S.lotteMenu], ld=LOTTE_DRINKS[S.lotteDrink], lH3=ld.price*0.5;
   const L={hotel:'lotte',G,fnb:[],items:[]};
@@ -143,7 +146,7 @@ document.querySelectorAll('[data-filter-menu]').forEach(button=>button.addEventL
   const row=(lab,a,b,cls,f)=>'<tr'+(cls?' class="'+cls+'"':'')+'><td>'+lab+'</td><td class="num">'+(f||fmt)(a)+'</td><td class="num">'+(f||fmt)(b)+'</td><td class="num">'+diff(a,b)+'</td></tr>';
   G.forEach((g,i)=>{
    h+='<tr class="cx-scen"><th colspan="4">'+g+' KHÁCH</th></tr>';
-   h+=row(GROUPS.A+' (gồm phí phục vụ)',L.subA[i],M.subA[i]);
+   h+=row(GROUPS.A,L.subA[i],M.subA[i]);
    EXTRA.forEach(gk=>{h+=row(GROUPS[gk],L['sub'+gk][i],M['sub'+gk][i])});
    h+=row('<b>Tổng chi phí</b>',L.total[i],M.total[i],'cx-total',v=>'<b>'+fmt(v)+'</b>');
    h+=row('Bình quân / khách',L.total[i]/g,M.total[i]/g,'cx-avg');
@@ -196,9 +199,9 @@ document.querySelectorAll('[data-filter-menu]').forEach(button=>button.addEventL
  }
  function notes(){
   return [
-   'Giá cả hai khách sạn cộng phí phục vụ '+S.svc+'% trên mọi khoản.',
+   'Tổng chi phí chưa bao gồm 5% phí phục vụ. Giá tính đúng đơn giá × số lượng theo báo giá.',
    'Le Méridien: gói Festive = món ăn + đồ uống free flow 2 giờ '+fmt(S.lmDrink)+'/khách; giờ thứ 3: '+fmt(S.lmH3)+'/khách. Lotte: giờ thứ 3 = 50% giá gói đồ uống 2 giờ.',
-   'Ô “Miễn phí”: khách sạn không thu. LED Le Méridien miễn phí đến 3,375 × 7,2 m; mở rộng tối đa 12 × 3,375 m cộng thêm 20.000.000đ++.',
+   'Ô “Miễn phí”: khách sạn không thu. LED Le Méridien miễn phí đến 3,375 × 7,2 m; đã tính thêm 20.000.000đ mở rộng lên 12 × 3,375 m.',
    'Welcome Le Méridien chỉ miễn phí khi ≥150 khách hoặc doanh thu ăn uống ≥250 triệu++; chưa đạt thì tính phí (đang tạm tính 300.000đ++/khách, chờ báo giá).',
    'Dự toán làm việc, chưa phải hợp đồng. Dữ liệu nhập lưu trên trình duyệt này.'
   ];
@@ -218,8 +221,8 @@ document.querySelectorAll('[data-filter-menu]').forEach(button=>button.addEventL
   document.querySelectorAll('.cp-menu-panel').forEach(p=>{p.hidden=Number(p.dataset.menuIndex)!==(p.dataset.cpMenu==='lotte'?S.lotteMenu:S.lmMenu)});
   return d;
  }
- const KEEP=new Set(['cx-pdf','cx-orient','cx-pdf-scope','cx-g0','cx-g1','cx-g2','cx-reserve','cx-hours','cx-svc','cx-lotte-menu','cx-lotte-drink','cx-lm-menu']);
- const OPEN_KEYS=['guests','reserve','hours','svc','lotteMenu','lotteDrink','lmMenu','view'];
+ const KEEP=new Set(['cx-pdf','cx-orient','cx-pdf-scope','cx-g0','cx-g1','cx-g2','cx-reserve','cx-hours','cx-lotte-menu','cx-lotte-drink','cx-lm-menu']);
+ const OPEN_KEYS=['guests','reserve','hours','lotteMenu','lotteDrink','lmMenu','view'];
  function applyLock(){
   const on=!!S.locked,panel=$('panel-compare');
   panel.classList.toggle('cx-locked',on);
@@ -227,13 +230,13 @@ document.querySelectorAll('[data-filter-menu]').forEach(button=>button.addEventL
  }
  function syncControls(){
   S.guests.forEach((g,i)=>$('cx-g'+i).value=g);
-  $('cx-hours').value=S.hours;$('cx-reserve').value=S.reserve;$('cx-svc').value=S.svc;
+  $('cx-hours').value=S.hours;$('cx-reserve').value=S.reserve;
   $('cx-lotte-menu').value=S.lotteMenu;$('cx-lotte-drink').value=S.lotteDrink;$('cx-lm-menu').value=S.lmMenu;
  }
 
  // ===== Sự kiện =====
  [0,1,2].forEach(i=>$('cx-g'+i).addEventListener('change',e=>{S.guests[i]=Math.max(1,Math.floor(Number(e.target.value)||1));e.target.value=S.guests[i];render();save()}));
- [['cx-reserve','reserve'],['cx-hours','hours'],['cx-svc','svc'],['cx-lotte-menu','lotteMenu'],['cx-lotte-drink','lotteDrink'],['cx-lm-menu','lmMenu']].forEach(([id,k])=>$(id).addEventListener('change',e=>{S[k]=Number(e.target.value);render();save()}));
+ [['cx-reserve','reserve'],['cx-hours','hours'],['cx-lotte-menu','lotteMenu'],['cx-lotte-drink','lotteDrink'],['cx-lm-menu','lmMenu']].forEach(([id,k])=>$(id).addEventListener('change',e=>{S[k]=Number(e.target.value);render();save()}));
  const panel=$('panel-compare');
  panel.addEventListener('click',e=>{const b=e.target.closest('[data-view]');if(!b)return;S.view=Number(b.dataset.view);render();save()});
  panel.addEventListener('change',e=>{const t=e.target;
@@ -278,7 +281,7 @@ document.querySelectorAll('[data-filter-menu]').forEach(button=>button.addEventL
    '.nl,.nm{display:inline-block;font-size:5.8pt;color:#fff;border-radius:2px;padding:0 3px;margin-right:2px}.nl{background:#193d7b}.nm{background:#227b78}'+
    'ul{margin:3px 0 0 16px;padding:0}li{margin:1px 0;line-height:1.35;font-size:7.6pt}.verdict{font-size:8pt;margin:3px 0;line-height:1.45}'+
    (land?'.p1{display:grid;grid-template-columns:1.25fr 1fr;gap:12px;align-items:start}':'');
-  const assume='Đồ uống: <b>'+S.hours+' giờ</b> · Lotte: <b>'+LOTTE_MENUS[S.lotteMenu].name+'</b> + '+LOTTE_DRINKS[S.lotteDrink].name+' · Le Méridien: <b>Gói '+LM_PKGS[S.lmMenu].name+'</b> · Phí phục vụ '+S.svc+'%.';
+  const assume='Đồ uống: <b>'+S.hours+' giờ</b> · Lotte: <b>'+LOTTE_MENUS[S.lotteMenu].name+'</b> + '+LOTTE_DRINKS[S.lotteDrink].name+' · Le Méridien: <b>Gói '+LM_PKGS[S.lmMenu].name+'</b> · <b>Tổng chi phí chưa bao gồm 5% phí phục vụ.</b>';
   const scope=$('cx-pdf-scope').value==='all'?[0,1,2]:[S.view];
   const html='<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"><title>SVI YEP – So sánh chi phí Lotte & Le Méridien</title><style>'+css+'</style></head><body>'+
    '<h1>SVI YEP 2026–2027 · So sánh chi phí Lotte Saigon &amp; Le Méridien</h1><div class="meta">'+'Số liệu chốt'+' · xuất ngày '+new Date().toLocaleDateString('vi-VN')+'</div><div class="assume">'+assume+'</div>'+

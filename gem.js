@@ -4,7 +4,7 @@
 (function(){
  const $=id=>document.getElementById(id);
  if(!$('gem-root'))return;
- const KEY='svi-yep-gem-v3', SVC=0.05;
+ const KEY='svi-yep-gem-v3', SVC=0;
  const fmt=n=>Math.round(n).toLocaleString('vi-VN')+'đ';
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const pay=(base,basis)=>basis==='nett'?base:base*(1+SVC);
@@ -82,7 +82,7 @@
   return h+'</tbody>';
  }
  function checkHTML(r){
-  return '<div class="gem-check"><span>Đối chiếu kiểu báo giá GEM · '+r.g+' khách</span><span>Cộng các khoản ++: <b>'+fmt(r.base.pp)+'</b></span><span>Phí phục vụ 5%: <b>'+fmt(r.svc)+'</b></span><span>Khoản nett: <b>'+fmt(r.base.nett)+'</b></span><span class="gem-check-total">Tổng: <b>'+fmt(r.total)+'</b></span>'+(r.payerOut?'<span>Khách tự trả (không tính): '+fmt(r.payerOut)+'</span>':'')+'</div>';
+  return '<div class="gem-check"><span>Đối chiếu kiểu báo giá GEM · '+r.g+' khách</span><span>Cộng các khoản ++: <b>'+fmt(r.base.pp)+'</b></span><span>Khoản nett: <b>'+fmt(r.base.nett)+'</b></span><span class="gem-check-total">Tổng: <b>'+fmt(r.total)+'</b></span>'+(r.payerOut?'<span>Khách tự trả (không tính): '+fmt(r.payerOut)+'</span>':'')+'</div>';
  }
  function detailHTML(r,pr){
   let t='<thead><tr><th>Hạng mục</th><th class="num">Đơn giá</th><th>Giá</th><th class="num">SL</th><th class="num">Trước phí</th><th class="num">Phải trả</th><th>Trạng thái</th>'+(pr?'':'<th>Nguồn · ghi chú</th>')+'</tr></thead>';
@@ -98,7 +98,7 @@
   return t;
  }
  function menuHTML(){const m=MENUS[S.menu-1];
-  return '<div class="gem-menu-card"><h4>SET MENU '+String(m.id).padStart(2,'0')+' · '+fmt(m.price)+'++/khách <small>chỉ thức ăn, chưa gồm đồ uống và phí phục vụ</small></h4><ol>'+m.dishes.map(d=>'<li>'+esc(d)+'</li>').join('')+'</ol><p class="muted">Nguồn: GEM Center – Set Menu 2026, trang '+m.page+'. PDF gốc chưa có trong thư mục <code>menus/</code>.</p></div>';
+  return '<div class="gem-menu-card"><h4>SET MENU '+String(m.id).padStart(2,'0')+' · '+fmt(m.price)+'++/khách <small>chỉ thức ăn, chưa gồm đồ uống</small></h4><ol>'+m.dishes.map(d=>'<li>'+esc(d)+'</li>').join('')+'</ol><p class="muted">Nguồn: GEM Center – Set Menu 2026, trang '+m.page+'. PDF gốc chưa có trong thư mục <code>menus/</code>.</p></div>';
  }
  function render(){
   const R=compute();
@@ -135,7 +135,7 @@
  $('gem-pdf').addEventListener('click',()=>{const R=compute(),r=R[S.view],o=$('gem-orient').value,land=o==='landscape';
   const css='@page{size:A4 '+o+';margin:10mm}*{box-sizing:border-box}body{font-family:"Segoe UI",Arial,sans-serif;color:#17233d;font-size:8pt;margin:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}h1{font-size:14pt;margin:0 0 2px;color:#5b2a86}h2{font-size:10pt;margin:8px 0 4px;padding:4px 8px;color:#fff;background:#6b3fa0;border-radius:4px}.meta{color:#5b6a80;font-size:7.6pt;margin-bottom:5px}table{width:100%;border-collapse:collapse;margin-bottom:4px}thead{display:table-header-group}tr{break-inside:avoid}th,td{border-bottom:1px solid #e3e8ef;padding:2.6px 4px;text-align:left;vertical-align:top;font-size:'+(land?'8pt':'7.4pt')+'}thead th{background:#efe8f8}.num{text-align:right;white-space:nowrap}small{display:block;color:#6b778a;font-size:6.6pt}.gem-grp-row th{background:#f4f0fa;color:#4a2a73}.gem-grp-row th span{float:right}.gem-total{font-weight:800}.gem-unp{color:#a35a00;font-style:italic}.muted{color:#8a95a5}.gem-warn{color:#b23a2a;font-weight:700}.gem-check span{display:inline-block;margin-right:12px}.gem-cur th,.gem-cur td{background:#faf6ff}ol{margin:2px 0 0 16px;padding:0}.pb{break-before:page}';
   const m=MENUS[S.menu-1];
-  const html='<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"><title>GEM Center – Dự toán</title><style>'+css+'</style></head><body><h1>GEM Center · Dự toán Gala Dinner 29/01/2027</h1><div class="meta">Dự toán chốt · xuất ngày '+new Date().toLocaleDateString('vi-VN')+' · Sảnh: <b>'+HALLS[S.hall].name+'</b> · Set Menu '+String(m.id).padStart(2,'0')+' ('+fmt(m.price)+'++) · '+DRINKS[S.drink].name+' 2,5 giờ ('+fmt(DRINKS[S.drink].price)+'++) · Bảo đảm '+S.guarantee+' khách · Giá ++ = +5% phí phục vụ</div>'+
+  const html='<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"><title>GEM Center – Dự toán</title><style>'+css+'</style></head><body><h1>GEM Center · Dự toán Gala Dinner 29/01/2027</h1><div class="meta">Dự toán chốt · xuất ngày '+new Date().toLocaleDateString('vi-VN')+' · Sảnh: <b>'+HALLS[S.hall].name+'</b> · Set Menu '+String(m.id).padStart(2,'0')+' ('+fmt(m.price)+'++) · '+DRINKS[S.drink].name+' 2,5 giờ ('+fmt(DRINKS[S.drink].price)+'++) · Bảo đảm '+S.guarantee+' khách · <b>Tổng chi phí chưa bao gồm 5% phí phục vụ.</b></div>'+
    '<h2>1 · TỔNG DỰ TOÁN THEO KỊCH BẢN</h2><table>'+summaryHTML(R)+'</table><div class="gem-check">'+checkHTML(r).replace(/<\/?div[^>]*>/g,'')+'</div><p><b>Món Set Menu '+String(m.id).padStart(2,'0')+':</b> '+m.dishes.map(esc).join(' · ')+'</p>'+
    
    '<div class="pb"></div><h2>2 · CHI TIẾT · '+r.g+' KHÁCH (tính '+r.bill+' suất)</h2><table>'+detailHTML(r,true)+'</table></body></html>';

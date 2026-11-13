@@ -38,7 +38,7 @@ Tab THỰC ĐƠN đã bổ sung 3 Asian Set (Standard/Premium/Deluxe), 5 Buffet 
 
 ## Tab thứ 4: SO SÁNH CHI PHÍ (Lotte Saigon · Le Méridien)
 
-- **Thanh công cụ:** 3 kịch bản số khách (mặc định 120 / 140 / 150), 2 hoặc 3 giờ đồ uống, phí phục vụ chung cho cả hai khách sạn (mặc định 5%), Khôi phục mặc định, Xuất PDF (A4 dọc/ngang; chi tiết kịch bản đang xem hoặc cả 3).
+- **Thanh công cụ:** 3 kịch bản số khách (mặc định 120 / 140 / 150), 2 hoặc 3 giờ đồ uống, Khôi phục mặc định, Xuất PDF (A4 dọc/ngang; chi tiết kịch bản đang xem hoặc cả 3).
 - **1 · Tổng chi phí dự trù:** Lotte | Le Méridien | Chênh lệch cho từng kịch bản, chia A · Ăn uống, B · LED/âm thanh/kỹ thuật, C · Welcome drink, D · Đồ uống mang vào & mua thêm, E · Vận hành, tổng và bình quân/khách.
 - **2 · Bảng đối chiếu chi tiết:** cùng hàng đầu chi phí, mỗi khách sạn một cột (Đơn giá · SL · Thành tiền). Ô “Miễn phí” = khách sạn không thu.
 - **Ăn uống:** Lotte Set A/B/C 1.200.000 / 1.300.000 / 1.400.000đ++; đồ uống 2 giờ 250.000 / 450.000 / 600.000đ++; giờ thứ 3 = 50% gói 2 giờ. Le Méridien gói Festive Standard/Premium/Deluxe 1.550.000 / 1.750.000 / 2.000.000đ++ = món ăn + đồ uống free flow 2 giờ 450.000đ++; giờ thứ 3 250.000đ++.
@@ -60,3 +60,7 @@ Tab THỰC ĐƠN đã bổ sung 3 Asian Set (Standard/Premium/Deluxe), 5 Buffet 
 - Tab GEM CENTER: số lượng mặc định đồng bộ với Lotte/Le Méridien (LED 24 m², 4 micro, vang 5 chai, corkage vang 2 / rượu mạnh 6 chai, 80 xe máy, 50 ô tô, welcome & giờ thêm theo số khách — chưa có giá GEM). Kịch bản 120/140/150. Khóa lưu đổi sang `svi-yep-gem-v2`.
 - (18:00) Tab GEM CENTER chuyển sang dự toán chốt: bỏ các khoản chưa có báo giá và khoản không dùng; bảng chi tiết hiển thị số cố định (không ô nhập), vẫn chọn được sảnh, Set Menu, gói đồ uống, số khách. Tổng mặc định (ERA, Menu 01, Heineken): 369.855.000đ.
 
+
+### Cập nhật 13/11/2026
+- Tab So sánh và tab GEM tính đúng đơn giá × số lượng theo báo giá, chưa bao gồm 5% phí phục vụ (PDF ghi rõ). Bỏ ô chọn phí phục vụ.
+- Le Méridien thêm khoản LED mở rộng 12 × 3,375 m: 20.000.000đ.
