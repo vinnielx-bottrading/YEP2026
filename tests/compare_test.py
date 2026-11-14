@@ -4,10 +4,10 @@ from playwright.async_api import async_playwright
 URL=(pathlib.Path(__file__).resolve().parent.parent/'index.html').as_uri()
 LM=[1200000,1300000,1400000]; LD=[250000,450000,600000]; MP=[1550000,1750000,2000000]
 def expect(g,lm,ld,mp):
-    # Lotte: món + đồ uống 2h + giờ 3 (50%) ; B: LED 24m² + 4 micro + thiết bị ngoài ; C welcome ; D vang 5, corkage 2, rượu mạnh 6 ; E xe
-    LA=g*(LM[lm]+LD[ld]+LD[ld]*0.5); LB=24*1200000+4*1000000+8000000; LC=300000*g; LDD=5*1300000+2*400000+6*600000; LE=80*6000+50*50000
-    MA=g*(MP[mp]+250000); MB=20000000; MD=5*800000+2*900000+6*1000000; ME=0; qual=g>=150 or MA+MB+MD+ME>=250000000; MC=0 if qual else 300000*g
-    return (LA,LB,LC,LDD,LE,LA+LB+LC+LDD+LE),(MA,MB,MC,MD,ME,MA+MB+MC+MD+ME)
+    # A ăn uống; B LED/micro/thiết bị ngoài (LM: LED mở rộng 20tr); C vang + corkage; D gửi xe
+    LA=g*(LM[lm]+LD[ld]+LD[ld]*0.5); LB=24*1200000+4*1000000+8000000; LDD=5*1300000+2*400000+6*600000; LE=80*6000+50*50000
+    MA=g*(MP[mp]+250000); MB=20000000; MD=5*800000+2*900000+6*1000000; ME=0
+    return (LA,LB,LDD,LE,LA+LB+LDD+LE),(MA,MB,MD,ME,MA+MB+MD+ME)
 num=lambda s:int(re.sub(r'[^\d]','',s) or 0)*(-1 if '−' in s else 1)
 async def main():
     bad=0;n=0
@@ -38,9 +38,9 @@ async def main():
                 subs=[[num(a),num(c)] for a,c in d['subs']]
                 gL,gM=num(d['grand'][0]),num(d['grand'][1])
                 sumL,sumM=num(d['sum'][4*si+1]),num(d['sum'][4*si+2])
-                ok=(detL==gL==sum(s[0] for s in subs)==L[5]==sumL) and (detM==gM==sum(s[1] for s in subs)==M[5]==sumM) and [s[0] for s in subs]==list(L[:5]) and [s[1] for s in subs]==list(M[:5])
+                ok=(detL==gL==sum(s[0] for s in subs)==L[4]==sumL) and (detM==gM==sum(s[1] for s in subs)==M[4]==sumM) and [s[0] for s in subs]==list(L[:4]) and [s[1] for s in subs]==list(M[:4])
                 n+=1
-                if not ok: bad+=1; print('LỆCH',lm,ld,mp,g,'| Lotte',detL,gL,L[5],sumL,'| LM',detM,gM,M[5],sumM)
+                if not ok: bad+=1; print('LỆCH',lm,ld,mp,g,'| Lotte',detL,gL,L[4],sumL,'| LM',detM,gM,M[4],sumM)
         print(f'Đã kiểm {n} tổ hợp; lệch {bad}; lỗi JS {errs}')
         await b.close()
 asyncio.run(main())

@@ -45,7 +45,6 @@ document.querySelectorAll('[data-filter-menu]').forEach(button=>button.addEventL
 
  const LOTTE_MENUS=[{name:'Set A',price:1200000},{name:'Set B',price:1300000},{name:'Set C',price:1400000}];
  const LOTTE_DRINKS=[{name:'Nước ngọt + nước lọc',price:250000},{name:'Bia Tiger + nước suối',price:450000},{name:'Bia Tiger + nước ngọt + vang nhà',price:600000}];
- const LM_MIN_GUESTS=150, LM_MIN_REVENUE=250000000;
  const LM_PKGS=[{name:'Festive Standard',price:1550000},{name:'Festive Premium',price:1750000},{name:'Festive Deluxe',price:2000000}];
 
  // Danh mục dùng chung: cùng hạng mục, cùng thứ tự cho hai khách sạn.
@@ -63,29 +62,26 @@ document.querySelectorAll('[data-filter-menu]').forEach(button=>button.addEventL
   {k:'outside',g:'B',name:'Phí mang thiết bị ngoài vào',
    lotte:{done:true,t:'priced',unit:'sự kiện',price:8000000,qty:1,on:true,note:'Khi dùng LED/âm thanh/ánh sáng của đơn vị ngoài.'},
    lm:{t:'free'}},
-  {k:'welcome',g:'C',name:'Welcome drink / canapé',
-   lotte:{t:'priced',unit:'khách',price:300000,qty:1,mode:'guest',on:true,note:'3 canapé + 1 mocktail/nước ép mỗi khách.'},
-   lm:{t:'cond',unit:'khách',price:300000,qty:1,mode:'guest',on:true,note:'Miễn phí 1 lượt mocktail HOẶC 2 canapé khi ≥150 khách hoặc tổng chi tiêu tại khách sạn ≥250 triệu. Chưa đạt thì tính phí — đơn giá đang tạm tính bằng mức Lotte, chờ Le Méridien báo giá.'}},
-  {k:'wine',g:'D',name:'Rượu vang mua tại khách sạn',
+  {k:'wine',g:'C',name:'Rượu vang mua tại khách sạn',
    lotte:{t:'priced',unit:'chai',price:1300000,qty:5,on:true,note:'Chiara Terra 750 ml.'},
    lm:{t:'priced',unit:'chai',price:800000,qty:5,on:true}},
-  {k:'corkwine',g:'D',name:'Corkage vang / champagne mang vào',
+  {k:'corkwine',g:'C',name:'Corkage vang / champagne mang vào',
    lotte:{t:'priced',unit:'chai',price:400000,qty:2,on:true},
    lm:{t:'priced',unit:'chai',price:900000,qty:2,on:true}},
-  {k:'corkspirit',g:'D',name:'Corkage rượu mạnh / soju mang vào',
+  {k:'corkspirit',g:'C',name:'Corkage rượu mạnh / soju mang vào',
    lotte:{t:'priced',unit:'chai',price:600000,qty:6,on:true},
    lm:{t:'priced',unit:'chai',price:1000000,qty:6,on:true}},
-  {k:'bike',g:'E',name:'Gửi xe máy',
+  {k:'bike',g:'D',name:'Gửi xe máy',
    lotte:{t:'priced',unit:'xe',price:6000,qty:80,on:true,note:'6.000đ/xe/4 giờ.'},
    lm:{t:'free'}},
-  {k:'car',g:'E',name:'Gửi ô tô',
+  {k:'car',g:'D',name:'Gửi ô tô',
    lotte:{t:'priced',unit:'xe',price:50000,qty:50,on:true,note:'50.000đ/xe/4 giờ.'},
    lm:{t:'free'}}
  ];
  const ITEMS={lotte:[],lm:[]};
  CATALOG.forEach(c=>['lotte','lm'].forEach(h=>ITEMS[h].push(Object.assign({k:c.k,g:c.g,name:c.name,unit:'',price:0,qty:1,on:false},c[h]))));
- const GROUPS={A:'A · Ăn uống',B:'B · LED, âm thanh & kỹ thuật',C:'C · Welcome drink',D:'D · Đồ uống mang vào & mua thêm',E:'E · Vận hành'};
- const EXTRA=['B','C','D','E'];
+ const GROUPS={A:'A · Ăn uống',B:'B · LED, âm thanh & kỹ thuật',C:'C · Đồ uống mang vào & mua thêm',D:'D · Vận hành'};
+ const EXTRA=['B','C','D'];
  const STATUS=[['draft','Dự tính'],['confirmed','Đã chốt']];
 
  const DEFAULTS={guests:[120,140,150],hours:3,svc:0,lmDrink:450000,lotteMenu:2,lotteDrink:2,lmMenu:0,lmH3:250000,reserve:0,view:0,locked:false,items:{}};
@@ -113,10 +109,6 @@ document.querySelectorAll('[data-filter-menu]').forEach(button=>button.addEventL
   M.fnb.push({name:'Đồ uống 2 giờ',price:S.lmDrink,amt:G.map(g=>g*S.lmDrink),note:'Free flow bia + nước ngọt + nước lọc.'});
   M.fnb.push({name:'Đồ uống giờ thứ 3',price:S.lmH3,off:!h3,editH3:true,amt:G.map(g=>h3?g*S.lmH3:0),note:'Free flow giờ thứ 3: '+fmt(S.lmH3)+'/khách.'});
   const mFnb=G.map(g=>g*(mp.price+(h3?S.lmH3:0)));
-  // Tổng chi tiêu tại Le Méridien để xét ưu đãi welcome = ăn uống + mọi khoản có tính tiền (trừ chính khoản welcome)
-  const mOther=G.map(g=>ITEMS.lm.reduce((s,it)=>{if(it.t!=='priced')return s;const st=itemState('lm',it);if(!st.on)return s;return s+Math.max(0,Number(st.price)||0)*Math.max(0,Number(st.qty)||0)*(it.mode==='guest'?g:1)},0));
-  M.revenue=G.map((_,i)=>mFnb[i]+mOther[i]);
-  M.qual=G.map((g,i)=>g>=LM_MIN_GUESTS||M.revenue[i]>=LM_MIN_REVENUE);
   M.fnb.push(...taxRows(mFnb));
   // Khoản bổ sung
   for(const R of [L,M]){
@@ -125,7 +117,6 @@ document.querySelectorAll('[data-filter-menu]').forEach(button=>button.addEventL
     const st=itemState(R.hotel,it),price=Math.max(0,Number(st.price)||0),qty=Math.max(0,Number(st.qty)||0);
     const cells=G.map((g,i)=>{
      if(!st.on)return {amt:0,label:'Không dùng',kind:'off'};
-     if(it.t==='cond'&&R.qual[i])return {amt:0,label:'Miễn phí',kind:'free'};
      if(price<=0||qty<=0)return {amt:0,label:'Chưa nhập giá/SL',kind:'unpriced'};
      const v=price*qty*(it.mode==='guest'?g:1)*mult;return {amt:v,label:fmt(v),kind:'amt'};
     });
@@ -154,7 +145,6 @@ document.querySelectorAll('[data-filter-menu]').forEach(button=>button.addEventL
    h+=row('<b>Tổng chi phí</b>',L.total[i],M.total[i],'cx-total',v=>'<b>'+fmt(v)+'</b>');
    h+=row('Bình quân / khách',L.total[i]/g,M.total[i]/g,'cx-avg');
    if(Number(S.reserve)>0){h+=row('Dự phòng phát sinh '+S.reserve+'%',L.reserve[i],M.reserve[i]);h+=row('<b>Ngân sách đề xuất</b>',L.budget[i],M.budget[i],'cx-total',v=>'<b>'+fmt(v)+'</b>');}
-   h+='<tr class="cx-avg"><td>Ưu đãi welcome Le Méridien (≥150 khách hoặc tổng chi tiêu ≥250 triệu)</td><td class="num muted">—</td><td class="num">'+(M.qual[i]?'<span class="cx-down">Đạt</span>':'<span class="cx-up">Chưa đạt</span>')+'<small>tổng chi tiêu '+fmt(M.revenue[i])+(M.qual[i]?'':' · thiếu '+fmt(LM_MIN_REVENUE-M.revenue[i]))+'</small></td><td></td></tr>';
   });
   return h+'</tbody>';
  }
@@ -185,7 +175,6 @@ document.querySelectorAll('[data-filter-menu]').forEach(button=>button.addEventL
    L.items.forEach((lx,i)=>{if(lx.it.g!==gk)return;const mx=M.items[i];
     const side=(h,x)=>{const {it,st}=x,c=x.cells[si];
      if(it.t==='free')return '<td class="num s-l cx-free" colspan="3">Miễn phí</td>';
-     if(it.t==='cond'&&c.kind==='free')return '<td class="num s-l cx-free" colspan="3">Miễn phí<small>đạt ngưỡng '+g+' khách</small></td>';
      if(ro)return st.on?'<td class="num s-l">'+fmt(x.price)+'<small>++ / '+esc(it.unit)+'</small></td><td class="num">'+(it.mode==='guest'?x.qty+' × '+g:x.qty+' '+esc(it.unit))+'</td><td class="num cx-'+c.kind+'">'+c.label+(st.status==='confirmed'?'<small class="ok">✓ Đã chốt</small>':'')+'</td>':'<td class="num s-l muted" colspan="3">Không dùng</td>';
      return '<td class="num s-l'+(st.on?'':' cx-off')+'"><span class="cx-pin"><input type="checkbox" class="cx-on" data-h="'+h+'" data-k="'+it.k+'" '+(st.on?'checked':'')+' aria-label="Dùng '+esc(it.name)+' – '+(h==='lotte'?'Lotte':'Le Méridien')+'"/><input class="cx-in cx-price" data-h="'+h+'" data-k="'+it.k+'" type="number" min="0" step="1000" value="'+(Number(st.price)||0)+'" aria-label="Đơn giá"/></span><small>++ / '+esc(it.unit)+'</small></td>'+
       '<td class="num'+(st.on?'':' cx-off')+'"><input class="cx-in cx-qty" data-h="'+h+'" data-k="'+it.k+'" type="number" min="0" step="1" value="'+(Number(st.qty)||0)+'" aria-label="Số lượng"/><small>'+(it.mode==='guest'?'× '+g+' khách':esc(it.unit))+'</small></td>'+
@@ -205,7 +194,6 @@ document.querySelectorAll('[data-filter-menu]').forEach(button=>button.addEventL
    'Tổng chi phí chưa bao gồm 5% phí phục vụ. Giá tính đúng đơn giá × số lượng theo báo giá.',
    'Le Méridien: gói Festive = món ăn + đồ uống free flow 2 giờ '+fmt(S.lmDrink)+'/khách; giờ thứ 3: '+fmt(S.lmH3)+'/khách. Lotte: giờ thứ 3 = 50% giá gói đồ uống 2 giờ.',
    'Ô “Miễn phí”: khách sạn không thu. LED Le Méridien miễn phí đến 3,375 × 7,2 m; đã tính thêm 20.000.000đ mở rộng lên 12 × 3,375 m.',
-   'Welcome Le Méridien miễn phí khi ≥150 khách hoặc tổng chi tiêu tại khách sạn ≥250 triệu (ăn uống + LED mở rộng + vang + corkage, không tính welcome); chưa đạt thì tính 300.000đ/khách.',
    'Dự toán làm việc, chưa phải hợp đồng. Dữ liệu nhập lưu trên trình duyệt này.'
   ];
  }
