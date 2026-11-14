@@ -16,6 +16,21 @@
  let decisions={};try{decisions=JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch(e){decisions={}}
  let theme='';try{theme=localStorage.getItem(THEME_KEY)||''}catch(e){}
  const sections=[...new Map(ITEMS.map(i=>[i.group,i.groupName])).entries()];
+ const CUSTOM_KEY='svi-yep-custom-items-v1';
+ let custom={};try{custom=JSON.parse(localStorage.getItem(CUSTOM_KEY)||'{}')||{}}catch(e){custom={}}
+ function saveCustom(){try{localStorage.setItem(CUSTOM_KEY,JSON.stringify(custom))}catch(e){}}
+ function allItems(){
+  const out=[];
+  for(const [g,name] of sections){
+   const base=ITEMS.filter(i=>i.group===g);out.push(...base);
+   const extra=Object.entries(custom).filter(([k,v])=>v&&v.group===g).sort((a,b)=>(a[1].at||0)-(b[1].at||0)||a[0].localeCompare(b[0]));
+   const nums=base.map(i=>/^(\d+)\.(\d+)/.exec(i.ref)).filter(Boolean).map(m=>+m[2]);
+   const letters=base.map(i=>/^B\.1([a-z])$/.exec(i.ref)).filter(Boolean).map(m=>m[1].charCodeAt(0));
+   extra.forEach(([k,v],n)=>{
+    const ref=nums.length?(+g)+'.'+(Math.max(...nums)+1+n):letters.length?'B.1'+String.fromCharCode(Math.max(...letters)+1+n):String(n+1);
+    out.push({id:'c-'+k,k,group:g,groupName:name,ref,title:v.title||'',sourceNote:'',custom:true})});
+  }
+  return out}
  const state=id=>decisions[id]?.status||'pending';
  function save(){try{localStorage.setItem(KEY,JSON.stringify(decisions))}catch(e){}}
  function renderTheme(){
@@ -25,18 +40,17 @@
   else{b.className='tk-theme-banner';b.innerHTML='<div class="tk-eyebrow">CHỦ ĐỀ GALA DINNER</div><h2>Chưa chọn chủ đề</h2><p>Chọn một trong 5 chủ đề bên dưới.</p>'}
   $('tk-themes').innerHTML=THEMES.map(x=>'<button type="button" class="tk-theme'+(x.id===theme?' on':'')+'" data-theme="'+x.id+'" style="--c1:'+x.c1+';--c2:'+x.c2+'"><b>'+esc(x.name)+'</b><span>'+esc(x.msg)+'</span><em>'+x.slogans.map(s=>esc(s.t)).join(' · ')+'</em></button>').join('');
  }
- function subList(id){const s=decisions[id]?.subs||{};return Object.entries(s).map(([k,v])=>({k,text:(v&&v.text)||'',at:(v&&v.at)||0})).sort((a,b)=>a.at-b.at||a.k.localeCompare(b.k))}
- function subsHtml(id){return '<div class="tk-subs">'+subList(id).map((s,i)=>'<div class="tk-sub" data-sub="'+esc(s.k)+'"><span class="tk-sub-no">'+(i+1)+'.</span><input class="tk-sub-text" type="text" maxlength="200" value="'+esc(s.text)+'" placeholder="Nhập chi tiết công việc..."/><button type="button" class="tk-sub-del" title="Xóa dòng này" aria-label="Xóa">×</button></div>').join('')+'</div>'}
  function render(){
   const term=$('tk-search').value.trim().toLocaleLowerCase('vi'),group=$('tk-group').value,status=$('tk-status').value;
-  const visible=ITEMS.filter(it=>(group==='all'||it.group===group)&&(status==='all'||state(it.id)===status)&&(!term||[it.title,it.ref,it.groupName,it.sourceNote,it.id,...subList(it.id).map(s=>s.text)].join(' ').toLocaleLowerCase('vi').includes(term)));
-  $('tk-stat-total').textContent=ITEMS.length;
-  ['keep','drop','pending'].forEach(s=>$('tk-stat-'+s).textContent=ITEMS.filter(it=>state(it.id)===s).length);
+  const ALL=allItems();
+  const visible=ALL.filter(it=>(group==='all'||it.group===group)&&(status==='all'||state(it.id)===status)&&(!term||[it.title,it.ref,it.groupName,it.sourceNote,it.id].join(' ').toLocaleLowerCase('vi').includes(term)));
+  $('tk-stat-total').textContent=ALL.length;
+  ['keep','drop','pending'].forEach(s=>$('tk-stat-'+s).textContent=ALL.filter(it=>state(it.id)===s).length);
   let out='';
   for(const [code,name] of sections){const m=visible.filter(i=>i.group===code);if(!m.length)continue;
-   out+='<section class="tk-section"><div class="tk-section-head"><h3>'+esc(code)+' · '+esc(name)+'</h3><span>'+m.length+' hạng mục</span></div><div class="tk-item-head"><div>Mã</div><div>Hạng mục công việc</div><div>Ghi chú của bạn</div><div>Phê duyệt</div></div>';
+   out+='<section class="tk-section"><div class="tk-section-head"><h3>'+esc(code)+' · '+esc(name)+'</h3><div class="tk-head-r"><span>'+m.length+' hạng mục</span><button type="button" class="tk-add" data-add-group="'+esc(code)+'" title="Thêm công việc vào nhóm này" aria-label="Thêm công việc vào nhóm '+esc(name)+'">+</button></div></div><div class="tk-item-head"><div>Mã</div><div>Hạng mục công việc</div><div>Ghi chú của bạn</div><div>Phê duyệt</div></div>';
    for(const it of m){const cur=state(it.id);
-    out+='<article class="tk-item is-'+cur+''+'" data-id="'+it.id+'"><div class="tk-ref">'+esc(it.ref)+'<small>'+esc(it.id)+'</small></div><div class="tk-titleblock"><div class="tk-namerow"><div class="tk-name">'+esc(it.title)+'</div><button type="button" class="tk-sub-add" title="Thêm chi tiết công việc" aria-label="Thêm chi tiết công việc">+</button></div>'+(it.sourceNote?'<div class="tk-source">'+esc(it.sourceNote)+'</div>':'')+subsHtml(it.id)+'</div><textarea class="tk-note" aria-label="Ghi chú cho '+esc(it.title)+'" placeholder="Ghi chú nếu cần...">'+esc(decisions[it.id]?.note||'')+'</textarea><div class="tk-choices">'+[['keep','GIỮ'],['drop','LOẠI BỎ'],['pending','CHƯA CHỐT']].map(([a,l])=>'<button type="button" data-action="'+a+'" class="tk-choice'+(cur===a?' on':'')+'" aria-pressed="'+(cur===a)+'">'+l+'</button>').join('')+'</div></article>'}
+    out+='<article class="tk-item is-'+cur+''+'" data-id="'+it.id+'"><div class="tk-ref">'+esc(it.ref)+''+(it.custom?'':'<small>'+esc(it.id)+'</small>')+'</div><div class="tk-titleblock">'+(it.custom?'<div class="tk-custrow"><input class="tk-cust-title" type="text" maxlength="200" value="'+esc(it.title)+'" placeholder="Nhập tên công việc..."/><button type="button" class="tk-cust-del" title="Xóa công việc này" aria-label="Xóa">×</button></div>':'<div class="tk-name">'+esc(it.title)+'</div>')+(it.sourceNote?'<div class="tk-source">'+esc(it.sourceNote)+'</div>':'')+'</div><textarea class="tk-note" aria-label="Ghi chú cho '+esc(it.title)+'" placeholder="Ghi chú nếu cần...">'+esc(decisions[it.id]?.note||'')+'</textarea><div class="tk-choices">'+[['keep','GIỮ'],['drop','LOẠI BỎ'],['pending','CHƯA CHỐT']].map(([a,l])=>'<button type="button" data-action="'+a+'" class="tk-choice'+(cur===a?' on':'')+'" aria-pressed="'+(cur===a)+'">'+l+'</button>').join('')+'</div></article>'}
    out+='</section>'}
   $('tk-sections').innerHTML=out||'<div class="tk-empty">Không có hạng mục phù hợp với bộ lọc.</div>';
  }
@@ -47,14 +61,14 @@
  const who=(()=>{let n='';try{n=localStorage.getItem('svi-yep-user')||''}catch(_){};return n})();
  function setSync(state,msg){const el=$('tk-sync');if(!el)return;el.className='tk-sync '+state;el.querySelector('span').textContent=msg}
  function cacheTheme(){try{localStorage.setItem(THEME_KEY,theme)}catch(_){}}
- function titleOf(id){return (ITEMS.find(i=>i.id===id)||{}).title||id}
+ function titleOf(id){return (allItems().find(i=>i.id===id)||{}).title||id}
  function log(action,id,value){if(!cloud)return;cloud.child('log').push({at:firebase.database.ServerValue.TIMESTAMP,action,id:id||'',title:id?titleOf(id):'',value:value==null?'':String(value).slice(0,300),by:$('tk-user').value.trim()||'Không tên'}).catch(()=>{})}
  const LBL={keep:'GIỮ',drop:'LOẠI BỎ',pending:'CHƯA CHỐT'};
  function renderSafe(){if(editing){pendingRender=true;return}render()}
  function renderLog(list){const box=$('tk-log-list');if(!box)return;
   if(!list.length){box.innerHTML='<p class="muted">Chưa có hoạt động.</p>';return}
   box.innerHTML=list.slice().reverse().map(x=>{const d=x.at?new Date(x.at).toLocaleString('vi-VN'):'';
-   const txt=x.action==='status'?'chọn <b>'+esc(LBL[x.value]||x.value)+'</b> cho “'+esc(x.title)+'”':x.action==='note'?'ghi chú “'+esc(x.title)+'”: '+esc(x.value):x.action==='theme'?(x.value?'chọn chủ đề <b>'+esc((THEMES.find(t=>t.id===x.value)||{}).name||x.value)+'</b>':'bỏ chọn chủ đề'):x.action==='sub'?'thêm chi tiết cho “'+esc(x.title)+'”: '+esc(x.value):x.action==='sub-del'?'xóa chi tiết của “'+esc(x.title)+'”: '+esc(x.value):x.action==='reset'?'<b>đặt lại</b> toàn bộ lựa chọn':esc(x.action);
+   const txt=x.action==='status'?'chọn <b>'+esc(LBL[x.value]||x.value)+'</b> cho “'+esc(x.title)+'”':x.action==='note'?'ghi chú “'+esc(x.title)+'”: '+esc(x.value):x.action==='theme'?(x.value?'chọn chủ đề <b>'+esc((THEMES.find(t=>t.id===x.value)||{}).name||x.value)+'</b>':'bỏ chọn chủ đề'):x.action==='add'?'thêm công việc vào nhóm '+esc(x.value)+': “'+esc(x.title)+'”':x.action==='del'?'xóa công việc “'+esc(x.value)+'”':x.action==='reset'?'<b>đặt lại</b> toàn bộ lựa chọn':esc(x.action);
    return '<div class="tk-log-row"><time>'+esc(d)+'</time><b class="tk-log-by">'+esc(x.by||'')+'</b> '+txt+'</div>'}).join('')}
  function initCloud(){
   if(!window.firebase||!window.SVI_FIREBASE_CONFIG){setSync('local','Chỉ lưu trên máy này (không tải được Firebase)');return}
@@ -67,6 +81,10 @@
    cloud.child('decisions').once('value').then(snap=>{
     if(!snap.exists()&&Object.keys(decisions).length){cloud.child('decisions').set(decisions).then(()=>log('import','',Object.keys(decisions).length+' mục từ máy này'))}
     cloud.child('decisions').on('value',s=>{decisions=s.val()||{};save();renderSafe()},fail);
+   },fail);
+   cloud.child('custom').once('value').then(snap=>{
+    if(!snap.exists()&&Object.keys(custom).length)cloud.child('custom').set(custom);
+    cloud.child('custom').on('value',s=>{custom=s.val()||{};saveCustom();renderSafe()},fail);
    },fail);
    cloud.child('theme').once('value').then(snap=>{
     if(!snap.exists()&&theme)cloud.child('theme').set(theme);
@@ -82,35 +100,35 @@
   if(cloud){clearTimeout(noteTimers[id]);noteTimers[id]=setTimeout(()=>{cloud.child('decisions/'+id).update({note,updatedAt:firebase.database.ServerValue.TIMESTAMP});log('note',id,note)},800)}}
  $('tk-sections').addEventListener('click',e=>{const b=e.target.closest('button[data-action]');if(!b)return;setStatus(b.closest('[data-id]').dataset.id,b.dataset.action)});
  $('tk-sections').addEventListener('input',e=>{if(!e.target.matches('textarea.tk-note'))return;setNote(e.target.closest('[data-id]').dataset.id,e.target.value)});
- $('tk-sections').addEventListener('focusin',e=>{if(e.target.matches('textarea.tk-note,input.tk-sub-text'))editing=true});
- $('tk-sections').addEventListener('focusout',e=>{if(!e.target.matches('textarea.tk-note,input.tk-sub-text'))return;editing=false;if(pendingRender){pendingRender=false;setTimeout(render,0)}});
+ $('tk-sections').addEventListener('focusin',e=>{if(e.target.matches('textarea.tk-note,input.tk-cust-title'))editing=true});
+ $('tk-sections').addEventListener('focusout',e=>{if(!e.target.matches('textarea.tk-note,input.tk-cust-title'))return;editing=false;if(pendingRender){pendingRender=false;setTimeout(render,0)}});
  $('tk-themes').addEventListener('click',e=>{const b=e.target.closest('[data-theme]');if(!b)return;theme=theme===b.dataset.theme?'':b.dataset.theme;cacheTheme();renderTheme();if(cloud){cloud.child('theme').set(theme);log('theme','',theme)}});
  $('tk-reset').addEventListener('click',()=>{if(!confirm('Đặt lại toàn bộ lựa chọn và ghi chú đã nhập? (áp dụng cho mọi người dùng chung Firebase)'))return;decisions={};save();render();if(cloud){cloud.child('decisions').remove();log('reset','','')}});
  $('tk-print').addEventListener('click',()=>{document.body.classList.add('tk-printing');window.print();setTimeout(()=>document.body.classList.remove('tk-printing'),500)});
  $('tk-user').value=who;$('tk-user').addEventListener('change',e=>{try{localStorage.setItem('svi-yep-user',e.target.value.trim())}catch(_){}});
- function subKey(){return cloud?cloud.push().key:'s'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
- const subTimers={};
+ function newKey(){return cloud?cloud.push().key:'k'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+ const custTimers={};
  $('tk-sections').addEventListener('click',e=>{
-  const add=e.target.closest('.tk-sub-add');
-  if(add){const id=add.closest('[data-id]').dataset.id,k=subKey(),at=Date.now();
-   decisions[id]={...(decisions[id]||{}),subs:{...(decisions[id]?.subs||{}),[k]:{text:'',at}}};save();editing=false;render();
-   if(cloud)cloud.child('decisions/'+id+'/subs/'+k).set({text:'',at});
-   const inp=document.querySelector('[data-id="'+id+'"] [data-sub="'+k+'"] input');if(inp)inp.focus();return}
-  const del=e.target.closest('.tk-sub-del');
-  if(del){const id=del.closest('[data-id]').dataset.id,k=del.closest('[data-sub]').dataset.sub,txt=decisions[id]?.subs?.[k]?.text||'';
-   if(txt&&!confirm('Xóa chi tiết “'+txt+'”?'))return;
-   if(decisions[id]?.subs){const s={...decisions[id].subs};delete s[k];decisions[id]={...decisions[id],subs:s}}
-   save();editing=false;render();
-   if(cloud){cloud.child('decisions/'+id+'/subs/'+k).remove();if(txt)log('sub-del',id,txt)}}
+  const add=e.target.closest('[data-add-group]');
+  if(add){const g=add.dataset.addGroup,k=newKey(),v={group:g,title:'',at:Date.now(),by:$('tk-user').value.trim()};
+   custom[k]=v;saveCustom();
+   if($('tk-group').value!=='all'&&$('tk-group').value!==g)$('tk-group').value=g;
+   $('tk-status').value='all';$('tk-search').value='';editing=false;render();
+   if(cloud)cloud.child('custom/'+k).set(v);
+   const inp=document.querySelector('[data-id="c-'+k+'"] .tk-cust-title');if(inp){inp.focus();inp.scrollIntoView({block:'center'})}return}
+  const del=e.target.closest('.tk-cust-del');
+  if(del){const id=del.closest('[data-id]').dataset.id,k=id.slice(2),title=custom[k]?.title||'';
+   if(!confirm('Xóa công việc “'+(title||'chưa đặt tên')+'”?'))return;
+   delete custom[k];delete decisions[id];saveCustom();save();editing=false;render();
+   if(cloud){cloud.child('custom/'+k).remove();cloud.child('decisions/'+id).remove();log('del','',title)}}
  });
- $('tk-sections').addEventListener('input',e=>{if(!e.target.matches('input.tk-sub-text'))return;
-  const id=e.target.closest('[data-id]').dataset.id,k=e.target.closest('[data-sub]').dataset.sub,text=e.target.value;
-  const cur=decisions[id]?.subs?.[k]||{at:Date.now()};
-  decisions[id]={...(decisions[id]||{}),subs:{...(decisions[id]?.subs||{}),[k]:{...cur,text}}};save();
-  if(cloud){clearTimeout(subTimers[k]);subTimers[k]=setTimeout(()=>cloud.child('decisions/'+id+'/subs/'+k).update({text,at:cur.at}),700)}});
- $('tk-sections').addEventListener('change',e=>{if(!e.target.matches('input.tk-sub-text'))return;const id=e.target.closest('[data-id]').dataset.id;if(e.target.value.trim())log('sub',id,e.target.value.trim())});
- $('tk-sections').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('input.tk-sub-text')){e.preventDefault();const add=e.target.closest('[data-id]').querySelector('.tk-sub-add');e.target.blur();add.click()}});
+ $('tk-sections').addEventListener('input',e=>{if(!e.target.matches('input.tk-cust-title'))return;
+  const k=e.target.closest('[data-id]').dataset.id.slice(2);if(!custom[k])return;custom[k]={...custom[k],title:e.target.value};saveCustom();
+  if(cloud){clearTimeout(custTimers[k]);const title=e.target.value;custTimers[k]=setTimeout(()=>cloud.child('custom/'+k).update({title}),700)}});
+ $('tk-sections').addEventListener('change',e=>{if(!e.target.matches('input.tk-cust-title'))return;const id=e.target.closest('[data-id]').dataset.id,k=id.slice(2),v=custom[k];
+  if(v&&v.title.trim()&&!v.logged){custom[k]={...v,logged:true};saveCustom();if(cloud){cloud.child('custom/'+k).update({logged:true});log('add',id,(sections.find(s=>s[0]===v.group)||[v.group,''])[1])}}});
+ $('tk-sections').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('input.tk-cust-title')){e.preventDefault();e.target.blur()}});
  initCloud();
  renderTheme();render();
- window.__tk={ITEMS};
+ window.__tk={ITEMS,allItems};
 })();
