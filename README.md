@@ -67,3 +67,19 @@ Tab THỰC ĐƠN đã bổ sung 3 Asian Set (Standard/Premium/Deluxe), 5 Buffet 
 - Đồ uống luôn tính free flow 3 giờ (Lotte giờ 3 = 50% gói 2 giờ; Le Méridien 250.000đ/khách); bỏ ô chọn số giờ. Kiểm thử `python3 tests/compare_test.py`: 81 tổ hợp menu × số khách, tổng = cộng chi tiết = công thức tính tay.
 - Le Méridien: welcome miễn phí khi ≥150 khách hoặc tổng chi tiêu tại khách sạn ≥250 triệu (ăn uống + LED mở rộng + vang + corkage; không tính welcome) — theo thương lượng 13/11/2026.
 - (14/11/2026) Bỏ toàn bộ chi phí welcome drink khỏi tab So sánh; nhóm còn lại: A Ăn uống, B LED/âm thanh/kỹ thuật, C Đồ uống mang vào & mua thêm, D Vận hành.
+
+## Tab thứ 6: DANH MỤC CÔNG VIỆC (14/11/2026)
+
+- Chuyển từ `SVI_YEP_Duyet_Danh_Muc_Cong_Viec.html` vào `tasks.js`: giữ nguyên 41 mục, ID, mã gốc, tên nhóm và khóa lưu `svi-yep-2025-work-items-approval-v1` (quyết định đã lưu vẫn còn).
+- Bổ sung 17 mục chuẩn bị Gala Dinner với ID mới (01-04…01-07, 02-03…02-05, 03-06, 03-07, 04-14, 04-15, 05-04, 06-04…06-06, 07-08, 09-05), mã "Bổ sung", mặc định CHƯA CHỐT. Tổng 58 mục / 9 nhóm; ngày 14/11 bỏ mục 01-03 (phụ thu setup) theo yêu cầu → còn 57 mục; 01-02 đổi thành Free Flow 3 giờ; 04-05 đổi thành "Khu vực tiểu cảnh".
+- Đầu tab có băng chủ đề Gala Dinner (thông điệp chủ đạo + 2 slogan kèm diễn giải); chọn 1 trong 5 chủ đề (Vươn Xa, Bứt Phá 2027, Chân Trời Mới, Hội Tụ & Vươn Tầm, Thắp Sáng Hành Trình), lưu `svi-yep-theme-v1`.
+- Giữ: thống kê, tìm kiếm, lọc nhóm/trạng thái, ghi chú, In/PDF, Đặt lại. Không có xuất CSV (đã bỏ theo yêu cầu).
+
+## Đồng bộ Firebase (tab Danh mục công việc)
+- Cấu hình trong `firebase-config.js`; dữ liệu lưu tại nhánh `svi-yep-2026/tasks` của Realtime Database (`decisions`, `theme`, `log`).
+- Mọi người mở trang dùng chung một bộ lựa chọn; mất mạng thì lưu tạm trên máy và tự gửi lại.
+- Ô "Người thao tác" ghi tên vào Lịch sử hoạt động (40 thao tác gần nhất).
+- Rules cần bật trên Firebase Console → Realtime Database → Rules:
+```json
+{ "rules": { "svi-yep-2026": { ".read": true, ".write": true }, "$other": { ".read": false, ".write": false } } }
+```

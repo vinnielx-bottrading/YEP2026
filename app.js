@@ -17,7 +17,7 @@ document.getElementById('print').addEventListener('click',()=>window.print());re
  const buttons=[...document.querySelectorAll('.content-tab')];
  function selectTab(name){
   buttons.forEach(btn=>{const on=btn.dataset.panel===name;btn.classList.toggle('active',on);btn.setAttribute('aria-selected',String(on));btn.tabIndex=on?0:-1});
-  ['prices','gallery','menus','compare','gem'].forEach(id=>{document.getElementById('panel-'+id).hidden=id!==name});
+  ['prices','gallery','menus','compare','gem','tasks'].forEach(id=>{document.getElementById('panel-'+id).hidden=id!==name});
  }
  buttons.forEach((button,index)=>{
   button.addEventListener('click',()=>selectTab(button.dataset.panel));
