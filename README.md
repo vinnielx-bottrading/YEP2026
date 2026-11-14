@@ -78,6 +78,7 @@ Tab THỰC ĐƠN đã bổ sung 3 Asian Set (Standard/Premium/Deluxe), 5 Buffet 
 ## Đồng bộ Firebase (tab Danh mục công việc)
 - Cấu hình trong `firebase-config.js`; dữ liệu lưu tại nhánh `svi-yep-2026/tasks` của Realtime Database (`decisions`, `theme`, `log`).
 - Mọi người mở trang dùng chung một bộ lựa chọn; mất mạng thì lưu tạm trên máy và tự gửi lại.
+- Nút + ở mỗi hạng mục để thêm chi tiết công việc (đánh số 1, 2, 3…; Enter để thêm dòng tiếp, × để xóa); lưu tại `decisions/{mã}/subs`.
 - Ô "Người thao tác" ghi tên vào Lịch sử hoạt động (40 thao tác gần nhất).
 - Rules cần bật trên Firebase Console → Realtime Database → Rules:
 ```json

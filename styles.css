@@ -336,3 +336,13 @@ th.gem-col small{color:#6b4e8f!important;opacity:1}
 #tk-log-list{max-height:320px;overflow:auto;margin-top:8px}
 .tk-log-row{font-size:12.5px;line-height:1.5;padding:6px 0;border-bottom:1px dashed #e6ecf4;color:#33465f}
 .tk-log-row time{color:#8a95a5;margin-right:8px;font-size:11.5px}.tk-log-by{color:#1f6b44}
+.tk-namerow{display:flex;align-items:flex-start;gap:8px;justify-content:space-between}
+.tk-sub-add{flex:none;width:26px;height:26px;border-radius:7px;border:1px solid #b9cbe3;background:#f2f6fc;color:#24446f;font-size:17px;font-weight:700;line-height:1;cursor:pointer}
+.tk-sub-add:hover{background:#24446f;color:#fff;border-color:#24446f}
+.tk-subs:empty{display:none}.tk-subs{margin-top:7px;display:grid;gap:5px}
+.tk-sub{display:flex;align-items:center;gap:6px}
+.tk-sub-no{font-size:12px;color:#6a7c95;min-width:18px;text-align:right}
+.tk-sub-text{flex:1;font:inherit;font-size:13px;border:1px solid #dbe3ee;border-radius:6px;padding:5px 8px;background:#fbfcfe;min-width:0}
+.tk-sub-text:focus{outline:none;border-color:#5a86c4;background:#fff}
+.tk-sub-del{flex:none;border:0;background:transparent;color:#a33;font-size:17px;cursor:pointer;width:22px;line-height:1}
+@media print{.tk-sub-add,.tk-sub-del{display:none}.tk-sub-text{border:0;padding:0;background:none}}
