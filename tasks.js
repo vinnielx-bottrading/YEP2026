@@ -61,14 +61,14 @@
  const who=(()=>{let n='';try{n=localStorage.getItem('svi-yep-user')||''}catch(_){};return n})();
  function setSync(state,msg){const el=$('tk-sync');if(!el)return;el.className='tk-sync '+state;el.querySelector('span').textContent=msg}
  function cacheTheme(){try{localStorage.setItem(THEME_KEY,theme)}catch(_){}}
- function titleOf(id){return (allItems().find(i=>i.id===id)||{}).title||id}
+ function titleOf(id){const c=(typeof CONCEPTS!=='undefined')&&CONCEPTS.find(x=>x.id===id);return c?'Ý tưởng: '+c.title:(allItems().find(i=>i.id===id)||{}).title||id}
  function log(action,id,value){if(!cloud)return;cloud.child('log').push({at:firebase.database.ServerValue.TIMESTAMP,action,id:id||'',title:id?titleOf(id):'',value:value==null?'':String(value).slice(0,300),by:$('tk-user').value.trim()||'Không tên'}).catch(()=>{})}
  const LBL={keep:'GIỮ',drop:'LOẠI BỎ',pending:'CHƯA CHỐT'};
  function renderSafe(){if(editing){pendingRender=true;return}render()}
  function renderLog(list){const box=$('tk-log-list');if(!box)return;
   if(!list.length){box.innerHTML='<p class="muted">Chưa có hoạt động.</p>';return}
   box.innerHTML=list.slice().reverse().map(x=>{const d=x.at?new Date(x.at).toLocaleString('vi-VN'):'';
-   const txt=x.action==='status'?'chọn <b>'+esc(LBL[x.value]||x.value)+'</b> cho “'+esc(x.title)+'”':x.action==='note'?'ghi chú “'+esc(x.title)+'”: '+esc(x.value):x.action==='theme'?(x.value?'chọn chủ đề <b>'+esc((THEMES.find(t=>t.id===x.value)||{}).name||x.value)+'</b>':'bỏ chọn chủ đề'):x.action==='add'?'thêm công việc vào nhóm '+esc(x.value)+': “'+esc(x.title)+'”':x.action==='del'?'xóa công việc “'+esc(x.value)+'”':x.action==='reset'?'<b>đặt lại</b> toàn bộ lựa chọn':esc(x.action);
+   const txt=x.action==='status'?'chọn <b>'+esc(LBL[x.value]||x.value)+'</b> cho “'+esc(x.title)+'”':x.action==='note'?'ghi chú “'+esc(x.title)+'”: '+esc(x.value):x.action==='theme'?(x.value?'chọn chủ đề <b>'+esc((THEMES.find(t=>t.id===x.value)||{}).name||x.value)+'</b>':'bỏ chọn chủ đề'):x.action==='concept'?'ghi chú “'+esc(x.title)+'”: '+esc(x.value):x.action==='add'?'thêm công việc vào nhóm '+esc(x.value)+': “'+esc(x.title)+'”':x.action==='del'?'xóa công việc “'+esc(x.value)+'”':x.action==='reset'?'<b>đặt lại</b> toàn bộ lựa chọn':esc(x.action);
    return '<div class="tk-log-row"><time>'+esc(d)+'</time><b class="tk-log-by">'+esc(x.by||'')+'</b> '+txt+'</div>'}).join('')}
  function initCloud(){
   if(!window.firebase||!window.SVI_FIREBASE_CONFIG){setSync('local','Chỉ lưu trên máy này (không tải được Firebase)');return}
@@ -86,6 +86,7 @@
     if(!snap.exists()&&Object.keys(custom).length)cloud.child('custom').set(custom);
     cloud.child('custom').on('value',s=>{custom=s.val()||{};saveCustom();renderSafe()},fail);
    },fail);
+   cloud.child('concepts').on('value',s=>{cnotes=s.val()||{};saveC();renderConcept()},fail);
    cloud.child('theme').once('value').then(snap=>{
     if(!snap.exists()&&theme)cloud.child('theme').set(theme);
     cloud.child('theme').on('value',s=>{if(!s.exists())return;theme=s.val()||'';cacheTheme();renderTheme()},fail);
@@ -128,6 +129,32 @@
  $('tk-sections').addEventListener('change',e=>{if(!e.target.matches('input.tk-cust-title'))return;const id=e.target.closest('[data-id]').dataset.id,k=id.slice(2),v=custom[k];
   if(v&&v.title.trim()&&!v.logged){custom[k]={...v,logged:true};saveCustom();if(cloud){cloud.child('custom/'+k).update({logged:true});log('add',id,(sections.find(s=>s[0]===v.group)||[v.group,''])[1])}}});
  $('tk-sections').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('input.tk-cust-title')){e.preventDefault();e.target.blur()}});
+ // ===== Ý tưởng trang trí (ảnh minh họa + ghi chú thay đổi) =====
+ const CONCEPTS=[
+  {id:'photobooth',img:'assets/concept/concept-01.webp',title:'Photobooth – backdrop chụp ảnh',desc:'Nền đỏ, vòng tròn vàng kim ở giữa, đào – mai hai bên, đèn lồng, hashtag #SVIYEP2027, thảm đỏ.'},
+  {id:'photet',img:'assets/concept/concept-02.webp',title:'Góc Phố Tết – ông đồ cho chữ',desc:'Mái tranh, vách tre, câu đối, ông đồ viết thư pháp, cây đào, quất, cúc vàng, đèn lồng.'},
+  {id:'entrance',img:'assets/concept/concept-03.webp',title:'Sảnh đón – cổng hoa & check-in',desc:'Cổng vòm đào – mai, bảng tên chủ đề, bàn check-in khăn nhung đỏ, lễ tân áo dài.'},
+  {id:'stage',img:'assets/concept/concept-04.webp',title:'Sân khấu – LED chủ đề',desc:'LED hiển thị logo + slogan, hai cây đào lớn, rèm kim tuyến vàng, moving head, bục MC.'},
+  {id:'ballroom',img:'assets/concept/concept-05.webp',title:'Toàn cảnh ballroom',desc:'Bàn tròn khăn đỏ, nơ ghế vàng, hoa đào giữa bàn, uplight đỏ hắt tường, trần màn sao.'},
+  {id:'table',img:'assets/concept/concept-06.webp',title:'Bàn tiệc cận cảnh',desc:'Đĩa lót vàng, lì xì trên khăn ăn, menu card và số bàn đỏ – vàng, bình đào, nến.'}];
+ const CONCEPT_KEY='svi-yep-concept-notes-v1';
+ let cnotes={};try{cnotes=JSON.parse(localStorage.getItem(CONCEPT_KEY)||'{}')||{}}catch(e){cnotes={}}
+ let cEditing=false;
+ function saveC(){try{localStorage.setItem(CONCEPT_KEY,JSON.stringify(cnotes))}catch(e){}}
+ function renderConcept(){if(cEditing)return;
+  $('tk-concept').innerHTML=CONCEPTS.map((c,i)=>{const n=cnotes[c.id]||{};
+   return '<figure class="tk-cc" data-cid="'+c.id+'"><button type="button" class="tk-cc-img" aria-label="Xem lớn: '+esc(c.title)+'"><img src="'+c.img+'" alt="'+esc(c.title)+'" loading="lazy"/><span>'+(i+1)+'</span></button><figcaption><b>'+esc(c.title)+'</b><p>'+esc(c.desc)+'</p><textarea class="tk-cc-note" rows="3" placeholder="Ghi chú thay đổi cho ý tưởng này...">'+esc(n.note||'')+'</textarea>'+(n.by||n.at?'<small class="tk-cc-meta">Cập nhật: '+[n.by,n.at?new Date(n.at).toLocaleString('vi-VN'):''].filter(Boolean).map(esc).join(' · ')+'</small>':'')+'</figcaption></figure>'}).join('')}
+ const cTimers={};
+ $('tk-concept').addEventListener('input',e=>{if(!e.target.matches('.tk-cc-note'))return;const id=e.target.closest('[data-cid]').dataset.cid,note=e.target.value,by=$('tk-user').value.trim();
+  cnotes[id]={...(cnotes[id]||{}),note,by,at:Date.now()};saveC();
+  if(cloud){clearTimeout(cTimers[id]);cTimers[id]=setTimeout(()=>{cloud.child('concepts/'+id).set({note,by,at:firebase.database.ServerValue.TIMESTAMP});log('concept',id,note)},900)}});
+ $('tk-concept').addEventListener('focusin',e=>{if(e.target.matches('.tk-cc-note'))cEditing=true});
+ $('tk-concept').addEventListener('focusout',e=>{if(e.target.matches('.tk-cc-note')){cEditing=false;setTimeout(renderConcept,0)}});
+ const lb=$('tk-lb');
+ $('tk-concept').addEventListener('click',e=>{const b=e.target.closest('.tk-cc-img');if(!b)return;const c=CONCEPTS.find(x=>x.id===b.closest('[data-cid]').dataset.cid);lb.querySelector('img').src=c.img;lb.querySelector('img').alt=c.title;lb.querySelector('p').textContent=c.title;lb.hidden=false});
+ lb.addEventListener('click',e=>{if(e.target===lb||e.target.closest('.tk-lb-x'))lb.hidden=true});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')lb.hidden=true});
+ renderConcept();
  initCloud();
  renderTheme();render();
  window.__tk={ITEMS,allItems};

@@ -344,3 +344,25 @@ th.gem-col small{color:#6b4e8f!important;opacity:1}
 .tk-cust-title:focus{outline:none;border-style:solid;border-color:#5a86c4;background:#fff}
 .tk-cust-del{flex:none;border:0;background:transparent;color:#a33;font-size:18px;cursor:pointer;width:24px;line-height:1}
 @media print{.tk-add,.tk-cust-del{display:none}.tk-cust-title{border:0;padding:0;background:none}}
+.tk-concept{margin:18px 0 22px}
+.tk-concept-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:10px}
+.tk-concept-head h2{margin:0;font-size:20px;color:#142b50}.tk-concept-head span{font-size:12.5px;color:#6a7c95}
+.tk-concept-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.tk-cc{margin:0;background:#fff;border:1px solid #dce4ef;border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.tk-cc-img{position:relative;display:block;padding:0;border:0;cursor:zoom-in;background:#111;aspect-ratio:16/10;overflow:hidden}
+.tk-cc-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s}
+.tk-cc-img:hover img{transform:scale(1.04)}
+.tk-cc-img span{position:absolute;left:10px;top:10px;background:rgba(0,0,0,.6);color:#fff;font-weight:800;font-size:12px;border-radius:999px;padding:3px 9px}
+.tk-cc figcaption{padding:12px 14px 14px;display:flex;flex-direction:column;gap:6px;flex:1}
+.tk-cc figcaption b{color:#142b50;font-size:14.5px}.tk-cc figcaption p{margin:0;font-size:12.5px;color:#5b6d86;line-height:1.5}
+.tk-cc-note{font:inherit;font-size:13px;border:1px solid #cbd6e6;border-radius:8px;padding:8px 10px;resize:vertical;min-height:64px;margin-top:auto}
+.tk-cc-note:focus{outline:none;border-color:#5a86c4}
+.tk-cc-meta{font-size:11px;color:#8a95a5}
+.tk-lb{position:fixed;inset:0;z-index:1000;background:rgba(8,12,20,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px}
+.tk-lb[hidden]{display:none}
+.tk-lb img{max-width:94vw;max-height:84vh;border-radius:10px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.tk-lb p{color:#fff;margin:12px 0 0;font-weight:700}
+.tk-lb-x{position:absolute;top:14px;right:20px;border:0;background:transparent;color:#fff;font-size:36px;cursor:pointer}
+@media(max-width:1040px){.tk-concept-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.tk-concept-grid{grid-template-columns:1fr}}
+@media print{.tk-concept-grid{grid-template-columns:repeat(2,1fr)}.tk-cc{break-inside:avoid}.tk-lb{display:none}}

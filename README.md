@@ -79,6 +79,7 @@ Tab THỰC ĐƠN đã bổ sung 3 Asian Set (Standard/Premium/Deluxe), 5 Buffet 
 - Cấu hình trong `firebase-config.js`; dữ liệu lưu tại nhánh `svi-yep-2026/tasks` của Realtime Database (`decisions`, `theme`, `log`).
 - Mọi người mở trang dùng chung một bộ lựa chọn; mất mạng thì lưu tạm trên máy và tự gửi lại.
 - Nút + ở đầu mỗi nhóm công việc để thêm công việc mới vào nhóm (tự đánh số tiếp, ví dụ 1.7; sửa tên trực tiếp, × để xóa); lưu tại `custom/{khóa}`, lựa chọn lưu như các mục khác.
+- Mục "Ý tưởng trang trí": 6 ảnh minh họa (`assets/concept/concept-01..06.webp`), bấm để xem lớn, ghi chú thay đổi dưới mỗi ảnh; lưu tại `concepts/{id}`.
 - Ô "Người thao tác" ghi tên vào Lịch sử hoạt động (40 thao tác gần nhất).
 - Rules cần bật trên Firebase Console → Realtime Database → Rules:
 ```json
