@@ -136,29 +136,41 @@
  $('tk-sections').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('input.tk-cust-title')){e.preventDefault();e.target.blur()}});
  // ===== Ý tưởng trang trí (ảnh minh họa + ghi chú thay đổi) =====
  const CONCEPTS=[
-  {id:'photobooth',img:'assets/concept/concept-01.webp',title:'Photobooth – backdrop chụp ảnh',desc:'Nền đỏ, vòng tròn vàng kim ở giữa, đào – mai hai bên, đèn lồng, hashtag #SVIYEP2027, thảm đỏ.'},
-  {id:'photet',img:'assets/concept/concept-02.webp',title:'Góc Phố Tết – ông đồ cho chữ',desc:'Mái tranh, vách tre, câu đối, ông đồ viết thư pháp, cây đào, quất, cúc vàng, đèn lồng.'},
-  {id:'entrance',img:'assets/concept/concept-03.webp',title:'Sảnh đón – cổng hoa & check-in',desc:'Cổng vòm đào – mai, bảng tên chủ đề, bàn check-in khăn nhung đỏ, lễ tân áo dài.'},
-  {id:'stage',img:'assets/concept/concept-04.webp',title:'Sân khấu – LED chủ đề',desc:'LED hiển thị logo + slogan, hai cây đào lớn, rèm kim tuyến vàng, moving head, bục MC.'},
-  {id:'ballroom',img:'assets/concept/concept-05.webp',title:'Toàn cảnh ballroom',desc:'Bàn tròn khăn đỏ, nơ ghế vàng, hoa đào giữa bàn, uplight đỏ hắt tường, trần màn sao.'},
-  {id:'table',img:'assets/concept/concept-06.webp',title:'Bàn tiệc cận cảnh',desc:'Đĩa lót vàng, lì xì trên khăn ăn, menu card và số bàn đỏ – vàng, bình đào, nến.'}];
+  {id:'activities',no:'01',title:'Các hoạt động',lead:'Khách đi qua câu chuyện 3 năm từ lúc bước vào đến khi ra về.',items:[
+   ['Ông đồ cho chữ','Đặt tại sảnh chờ, từ giờ đón khách đến trước khai tiệc (45–60 phút). Chuẩn bị sẵn khoảng 10 chữ hợp chủ đề: Vươn, Tầm, Phúc, An, Lộc, Tâm, Thịnh, Hợp…'],
+   ['Hành lang “3 chương”','Ba khung tre mở dọc sảnh dẫn vào ballroom: 2025 · TẦM NHÌN → 2026 · VỊ THẾ → 2027 · TẦM VÓC; ánh sáng tăng dần về phía cửa ballroom.'],
+   ['Check-in & “Mảnh ghép vị thế”','Mỗi CBNV nhận một mảnh ghép khi check-in, ghi tên hoặc cam kết 2027 rồi gắn lên tường; cuối giờ đón khách các mảnh ghép tạo thành chữ SVI.'],
+   ['Khai mạc “Thắp sáng tầm vóc”','LED đang tách thành 3 cụm (3 chương) di chuyển hợp lại thành một màn 12 m, bùng sáng chủ đề; lãnh đạo các đơn vị cùng thực hiện nghi thức.'],
+   ['Bàn tiệc mang tên dấu mốc','Thay số bàn bằng tên dấu mốc, dự án nổi bật hoặc đơn vị thành viên, kèm một dòng giới thiệu ngắn.'],
+   ['“Lá thư gửi 2028”','Mỗi bàn viết mục tiêu, lời nhắn cho năm mới, niêm phong vào hộp thời gian trên sân khấu; mở ra tại YEP năm sau để nối tiếp câu chuyện.'],
+   ['Mosaic chân dung','Ảnh chụp CBNV khi check-in được ghép thành logo/chủ đề, trình chiếu trên LED ở phần kết.']]},
+  {id:'style',no:'02',title:'Phong cách thiết kế',lead:'Tết Việt thanh lịch – nhẹ, thoáng, sang; rõ chất Việt Nam, không nặng trang trí.',items:[
+   ['Màu chủ đạo','Đỏ đậm – vàng kim – trắng ngà; nền sáng, đỏ dùng làm điểm nhấn.'],
+   ['Chất liệu & biểu tượng','Tre, mây đan, lụa, sơn mài, gốm Bát Tràng, hoa văn trống đồng Đông Sơn, hoa sen, mai vàng, đào hồng, quất.'],
+   ['Bố cục','Trang trí thấp và trải ngang (trần ballroom chỉ 4,2 m); tận dụng view sông và vách kính ở sảnh chờ.'],
+   ['Sảnh chờ','Góc ông đồ, hành lang 3 chương, check-in và bức tường mảnh ghép nối liền một mạch dọc hành lang 6 × 25 m.'],
+   ['Ballroom','Khăn đỏ đậm, áo ghế vàng champagne, hoa mai thấp giữa bàn, uplight hổ phách hắt tường, mai thấp hai bên sân khấu.'],
+   ['Tránh','Yếu tố kiến trúc Trung Hoa: mái cong đầu đao, rồng, nút thắt đỏ, chữ Hán, khung lưới, dãy đèn lồng đỏ tròn.']]},
+  {id:'led',no:'03',title:'Màn hình LED – hiện đại, futuristic',lead:'Trang trí mang chất Việt truyền thống, LED mang chất tương lai: thể hiện đúng câu chuyện “từ nền tảng vươn tới tầm vóc”.',items:[
+   ['Thiết bị','LED 12 m ngang ghép từ 10 tấm di động có sẵn tại Le Méridien; kết hợp 28 đèn beam và 28 đèn PAR của khách sạn.'],
+   ['Ngôn ngữ hình ảnh','Motion graphics hạt vàng, đường line-art phát sáng, chiều sâu 3D, typography hiện đại; hoa mai/đào cách điệu dạng ánh sáng thay vì hình vẽ truyền thống.'],
+   ['Đón khách','Vòng lặp chuyển động chậm: hạt vàng trôi, hoa mai ánh sáng nở dần, tên chủ đề xuất hiện nhẹ.'],
+   ['Khai mạc','LED tách 3 cụm kể 3 chương → hợp thành một, hạt sáng bùng nổ thành tên chủ đề; đèn beam quét đồng bộ nhạc.'],
+   ['Tổng kết & vinh danh','Số liệu năm dạng biểu đồ 3D chuyển động; tên và chân dung người được vinh danh bay vào khung sáng.'],
+   ['Quay số & kết','Giao diện quay số dạng 3D futuristic; kết bằng mosaic chân dung CBNV ghép thành logo/chủ đề.']]}];
  const CONCEPT_KEY='svi-yep-concept-notes-v1';
  let cnotes={};try{cnotes=JSON.parse(localStorage.getItem(CONCEPT_KEY)||'{}')||{}}catch(e){cnotes={}}
  let cEditing=false;
  function saveC(){try{localStorage.setItem(CONCEPT_KEY,JSON.stringify(cnotes))}catch(e){}}
  function renderConcept(){if(cEditing)return;
-  $('tk-concept').innerHTML=CONCEPTS.map((c,i)=>{const n=cnotes[c.id]||{};
-   return '<figure class="tk-cc" data-cid="'+c.id+'"><button type="button" class="tk-cc-img" aria-label="Xem lớn: '+esc(c.title)+'"><img src="'+c.img+'" alt="'+esc(c.title)+'" loading="lazy"/><span>'+(i+1)+'</span></button><figcaption><b>'+esc(c.title)+'</b><p>'+esc(c.desc)+'</p><textarea class="tk-cc-note" rows="3" placeholder="Ghi chú thay đổi cho ý tưởng này...">'+esc(n.note||'')+'</textarea>'+(n.by||n.at?'<small class="tk-cc-meta">Cập nhật: '+[n.by,n.at?new Date(n.at).toLocaleString('vi-VN'):''].filter(Boolean).map(esc).join(' · ')+'</small>':'')+'</figcaption></figure>'}).join('')}
+  $('tk-concept').innerHTML=CONCEPTS.map(c=>{const n=cnotes[c.id]||{};
+   return '<article class="tk-cc tk-cc-'+c.id+'" data-cid="'+c.id+'"><div class="tk-cc-top"><span class="tk-cc-no">'+c.no+'</span><h3>'+esc(c.title)+'</h3></div><p class="tk-cc-lead">'+esc(c.lead)+'</p><ul class="tk-cc-list">'+c.items.map(([k,v])=>'<li><b>'+esc(k)+'</b><span>'+esc(v)+'</span></li>').join('')+'</ul><textarea class="tk-cc-note" rows="3" placeholder="Ghi chú thay đổi cho nhóm ý tưởng này...">'+esc(n.note||'')+'</textarea>'+(n.by||n.at?'<small class="tk-cc-meta">Cập nhật: '+[n.by,n.at?new Date(n.at).toLocaleString('vi-VN'):''].filter(Boolean).map(esc).join(' · ')+'</small>':'')+'</article>'}).join('')}
  const cTimers={};
  $('tk-concept').addEventListener('input',e=>{if(!e.target.matches('.tk-cc-note'))return;const id=e.target.closest('[data-cid]').dataset.cid,note=e.target.value,by=$('tk-user').value.trim();
   cnotes[id]={...(cnotes[id]||{}),note,by,at:Date.now()};saveC();
   if(cloud){clearTimeout(cTimers[id]);cTimers[id]=setTimeout(()=>{cloud.child('concepts/'+id).set({note,by,at:firebase.database.ServerValue.TIMESTAMP});log('concept',id,note)},900)}});
  $('tk-concept').addEventListener('focusin',e=>{if(e.target.matches('.tk-cc-note'))cEditing=true});
  $('tk-concept').addEventListener('focusout',e=>{if(e.target.matches('.tk-cc-note')){cEditing=false;setTimeout(renderConcept,0)}});
- const lb=$('tk-lb');
- $('tk-concept').addEventListener('click',e=>{const b=e.target.closest('.tk-cc-img');if(!b)return;const c=CONCEPTS.find(x=>x.id===b.closest('[data-cid]').dataset.cid);lb.querySelector('img').src=c.img;lb.querySelector('img').alt=c.title;lb.querySelector('p').textContent=c.title;lb.hidden=false});
- lb.addEventListener('click',e=>{if(e.target===lb||e.target.closest('.tk-lb-x'))lb.hidden=true});
- document.addEventListener('keydown',e=>{if(e.key==='Escape')lb.hidden=true});
  renderConcept();
  initCloud();
  renderTheme();render();
