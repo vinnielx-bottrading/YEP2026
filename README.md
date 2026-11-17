@@ -86,3 +86,9 @@ Tab THỰC ĐƠN đã bổ sung 3 Asian Set (Standard/Premium/Deluxe), 5 Buffet 
 ```json
 { "rules": { "svi-yep-2026": { ".read": true, ".write": true }, "$other": { ".read": false, ".write": false } } }
 ```
+
+## Timeline công việc (tab Danh mục công việc)
+- 81 công việc, mỗi việc có **đơn vị phụ trách** (SVI · Agency · Khách sạn · SVI + Agency · SVI + Khách sạn) và **hạn hoàn thành**; sửa trực tiếp trên từng dòng, tick **Xong** khi hoàn thành. Lưu tại `decisions/{mã}` (owner, due, done) trên Firebase.
+- 2 cách xem: **Timeline** (7 giai đoạn: 17/11–30/11 brief agency → 01/12–15/12 chọn agency → 16/12–31/12 concept, KV → 01/01–15/01 kịch bản, ấn phẩm → 16/01–28/01 sản xuất, tổng duyệt → 29/01 ngày sự kiện → sau sự kiện) và **Theo nhóm**.
+- Nhóm mới **CS · Concept, sáng tạo & agency** (CS.1–CS.11) cùng các việc bổ sung: hợp đồng khách sạn, thư mời điện tử, ấn phẩm vinh danh, dress code, ông đồ, hành lang 3 chương, bức tường mảnh ghép, video tổng kết năm, quà ra về, nghiệm thu.
+- **Xuất PDF** (A4 ngang, theo bộ lọc) và **Xuất Excel** (.xlsx, 2 sheet: Timeline, Tổng hợp) – thư viện `vendor/xlsx.min.js` (xlsx-js-style, Apache-2.0).

@@ -401,3 +401,44 @@ th.gem-col small{color:#6b4e8f!important;opacity:1}
 .tk-cc-led .tk-cc-note{background:#ffffff10;border-color:#ffffff30;color:#fff}
 .tk-cc-led .tk-cc-meta{color:#9aa6c0}
 .tk-cc-list{align-content:start}
+/* ===== Timeline công việc ===== */
+.tk-stats{grid-template-columns:repeat(7,minmax(0,1fr))}
+.tk-stat.done strong{color:#1f7a4d}.tk-stat.overdue strong{color:#b4232f}.tk-stat.soon strong{color:#b46a00}
+.tk-progress{display:flex;align-items:center;gap:12px;margin:-2px 0 10px;font-size:12.5px;color:#4e6181}
+.tk-pbar{flex:0 0 260px;height:9px;border-radius:99px;background:#e1e8f2;overflow:hidden}.tk-pbar i{display:block;height:100%;background:linear-gradient(90deg,#1f9d55,#8bc34a);border-radius:99px}
+.tk-view{display:inline-flex;border:1px solid #cbd6e6;border-radius:9px;overflow:hidden}
+.tk-controls .tk-view button{border:0;border-radius:0;min-height:40px;padding:9px 14px;font-weight:700;color:#4e6181}
+.tk-controls .tk-view button.on{background:#24446f;color:#fff}
+#tk-xls{color:#17613d}
+.tk-row-head,.tk-row{grid-template-columns:58px minmax(0,1.7fr) 150px minmax(0,1fr) 216px 62px;gap:12px}
+.tk-row{align-items:start}
+.tk-row .tk-ref{padding-top:3px;font-weight:800;color:#24446f}
+.tk-meta{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-top:6px}
+.tk-own{font:inherit;font-size:11.5px;font-weight:800;border-radius:99px;padding:3px 8px;border:1px solid currentColor;background:#fff;cursor:pointer}
+.own-svi{color:#24446f;background:#eaf0fa}.own-agency{color:#b4540f;background:#fff1e6}.own-hotel{color:#17766b;background:#e4f5f2}.own-svi-agency{color:#6b3fa0;background:#f2ecfa}.own-svi-hotel{color:#3d6b2a;background:#edf6e7}
+.tk-grp{font-size:11.5px;color:#7a879b}
+.tk-duebox{display:flex;flex-direction:column;gap:4px}
+.tk-due{font:inherit;font-size:13px;border:1px solid #d5dfeb;border-radius:8px;padding:6px 8px;color:#183050;background:#fff;width:100%}
+.tk-left{font-size:11.5px;font-weight:700;color:#6a7c95}
+.tk-row .tk-choice{padding:7px 4px;font-size:11px}
+.tk-donebox{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:700;color:#6a7c95;cursor:pointer;padding-top:4px}
+.tk-donebox input{width:20px;height:20px;accent-color:#1f9d55;cursor:pointer}
+.tk-row.is-done{background:#f3fbf6}.tk-row.is-done .tk-name{color:#5f7a66;text-decoration:line-through;text-decoration-color:#9cc3a9}.tk-row.is-done .tk-left{color:#1f7a4d}
+.tk-row.is-overdue{background:#fff5f5}.tk-row.is-overdue .tk-left{color:#b4232f}.tk-row.is-overdue .tk-due{border-color:#e5a0a9;color:#9b2436}
+.tk-row.is-soon .tk-left{color:#b46a00}.tk-row.is-soon .tk-due{border-color:#f0c27a}
+.tk-row.is-dropped{opacity:.6}
+.tk-phase .tk-section-head h3{display:flex;align-items:center;gap:9px}
+.tk-ph-no{font-size:11px;font-weight:800;letter-spacing:.5px;background:#24446f;color:#fff;border-radius:7px;padding:3px 8px}
+.tk-ph-now{font-style:normal;font-size:11px;font-weight:800;color:#b46a00;background:#fff1d6;border-radius:99px;padding:2px 9px}
+.tk-phase.is-now{border-color:#e0b25a;box-shadow:0 0 0 2px #f6e3b8}
+.tk-phase.is-now .tk-section-head{background:#fff6e3}.tk-phase.is-now .tk-ph-no{background:#b46a00}
+.tk-phase.is-past .tk-section-head{background:#eef1f5}.tk-phase.is-past .tk-ph-no{background:#8a95a5}
+.tk-head-r .tk-ph-date{font-weight:800;color:#24446f}
+.tk-ph-bar{width:90px;height:7px;border-radius:99px;background:#d7e1ef;overflow:hidden}.tk-ph-bar i{display:block;height:100%;background:#1f9d55}
+@media(max-width:1180px){.tk-stats{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:1040px){.tk-row-head{display:none}.tk-row{grid-template-columns:58px 1fr 1fr}.tk-row .tk-titleblock{grid-column:2/4}.tk-row .tk-duebox{grid-column:2}.tk-row .tk-donebox{grid-column:3;flex-direction:row;justify-content:flex-start}.tk-row .tk-note,.tk-row .tk-choices{grid-column:2/4}.tk-progress{flex-wrap:wrap}.tk-pbar{flex-basis:100%}}
+@media(max-width:640px){.tk-stats{grid-template-columns:repeat(2,1fr)}}
+.tk-toolbar{position:static}
+.tk-controls select{min-width:150px}
+.tk-own{width:auto;max-width:100%}
+.tk-row-head,.tk-row{grid-template-columns:58px minmax(0,1.7fr) 170px minmax(0,1fr) 216px 62px}
