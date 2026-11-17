@@ -80,6 +80,7 @@ Tab THỰC ĐƠN đã bổ sung 3 Asian Set (Standard/Premium/Deluxe), 5 Buffet 
 - Mọi người mở trang dùng chung một bộ lựa chọn; mất mạng thì lưu tạm trên máy và tự gửi lại.
 - Nút + ở đầu mỗi nhóm công việc để thêm công việc mới vào nhóm (tự đánh số tiếp, ví dụ 1.7; sửa tên trực tiếp, × để xóa); lưu tại `custom/{khóa}`, lựa chọn lưu như các mục khác.
 - Mục "Ý tưởng trang trí": 6 ảnh minh họa (`assets/concept/concept-01..06.webp`), bấm để xem lớn, ghi chú thay đổi dưới mỗi ảnh; lưu tại `concepts/{id}`.
+- Đầu tab: "Hành trình chủ đề" YEP 2025 (Kỷ nguyên mới – Tầm nhìn mới) → YEP 2026 (Tầm nhìn mới – Vị thế mới) → YEP 2027; 5 phương án 2027 tổng hợp từ đề xuất của Ms. Hồng: Vững vị thế – Vươn tầm vóc; Hợp lực vị thế – Lan tỏa giá trị; Khẳng định vị thế – Kiến tạo tương lai; Vị thế mới – Tầm vóc mới; Nâng tầm vị thế – Dẫn dắt tương lai.
 - Ô "Người thao tác" ghi tên vào Lịch sử hoạt động (40 thao tác gần nhất).
 - Rules cần bật trên Firebase Console → Realtime Database → Rules:
 ```json
