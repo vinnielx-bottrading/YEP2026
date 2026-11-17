@@ -79,7 +79,7 @@ Tab THỰC ĐƠN đã bổ sung 3 Asian Set (Standard/Premium/Deluxe), 5 Buffet 
 - Cấu hình trong `firebase-config.js`; dữ liệu lưu tại nhánh `svi-yep-2026/tasks` của Realtime Database (`decisions`, `theme`, `log`).
 - Mọi người mở trang dùng chung một bộ lựa chọn; mất mạng thì lưu tạm trên máy và tự gửi lại.
 - Nút + ở đầu mỗi nhóm công việc để thêm công việc mới vào nhóm (tự đánh số tiếp, ví dụ 1.7; sửa tên trực tiếp, × để xóa); lưu tại `custom/{khóa}`, lựa chọn lưu như các mục khác.
-- Mục "Ý tưởng tổ chức": 3 nhóm văn bản (Các hoạt động · Phong cách thiết kế · Màn hình LED hiện đại, futuristic), mỗi nhóm có ô ghi chú thay đổi; lưu tại `concepts/{activities|style|led}`.
+- Mục "Ý tưởng tổ chức": chia tab theo ý tưởng – Ý tưởng 1 · Tết Việt thanh lịch (đỏ đậm, vàng kim, trắng ngà) và Ý tưởng 2 · Digital Gala hiện đại (navy, vàng kim, LED digital). Mỗi ý tưởng gồm 4 nhóm đồng nhất: Các hoạt động · Phong cách thiết kế · Màn hình LED & ánh sáng · Biểu diễn & tương tác; mỗi nhóm có ô ghi chú (lưu `concepts/{id}`). Thêm ý tưởng mới = thêm 1 dòng vào mảng IDEAS và 4 thẻ trong CONCEPTS (tasks.js).
 - Đầu tab: "Hành trình chủ đề" YEP 2025 (Kỷ nguyên mới – Tầm nhìn mới) → YEP 2026 (Tầm nhìn mới – Vị thế mới) → YEP 2027; 5 phương án 2027 tổng hợp từ đề xuất của Ms. Hồng: Vững vị thế – Vươn tầm vóc; Hợp lực vị thế – Lan tỏa giá trị; Khẳng định vị thế – Kiến tạo tương lai; Vị thế mới – Tầm vóc mới; Nâng tầm vị thế – Dẫn dắt tương lai.
 - Ô "Người thao tác" ghi tên vào Lịch sử hoạt động (40 thao tác gần nhất).
 - Rules cần bật trên Firebase Console → Realtime Database → Rules:
@@ -88,7 +88,7 @@ Tab THỰC ĐƠN đã bổ sung 3 Asian Set (Standard/Premium/Deluxe), 5 Buffet 
 ```
 
 ## Timeline công việc (tab Danh mục công việc)
-- 81 công việc, mỗi việc có **đơn vị phụ trách** (SVI · Agency · Khách sạn · SVI + Agency · SVI + Khách sạn) và **hạn hoàn thành**; sửa trực tiếp trên từng dòng, tick **Xong** khi hoàn thành. Lưu tại `decisions/{mã}` (owner, due, done) trên Firebase.
+- 81 công việc, mỗi việc có **đơn vị phụ trách** (SVI · Agency · Khách sạn · SVI + Agency · SVI + Khách sạn) và **hạn hoàn thành**; sửa trực tiếp trên từng dòng, tick **Xong** khi hoàn thành. Mỗi việc có thêm 3 ô **Người thực hiện · Người giám sát · Báo cáo cho** (gợi ý tên đã nhập). Lưu tại `decisions/{mã}` (owner, due, done, doer, sup, rep) trên Firebase.
 - 2 cách xem: **Timeline** (7 giai đoạn: 17/11–30/11 brief agency → 01/12–15/12 chọn agency → 16/12–31/12 concept, KV → 01/01–15/01 kịch bản, ấn phẩm → 16/01–28/01 sản xuất, tổng duyệt → 29/01 ngày sự kiện → sau sự kiện) và **Theo nhóm**.
 - Nhóm mới **CS · Concept, sáng tạo & agency** (CS.1–CS.11) cùng các việc bổ sung: hợp đồng khách sạn, thư mời điện tử, ấn phẩm vinh danh, dress code, ông đồ, hành lang 3 chương, bức tường mảnh ghép, video tổng kết năm, quà ra về, nghiệm thu.
 - **Xuất PDF** (A4 ngang, theo bộ lọc) và **Xuất Excel** (.xlsx, 2 sheet: Timeline, Tổng hợp) – thư viện `vendor/xlsx.min.js` (xlsx-js-style, Apache-2.0).
