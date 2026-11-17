@@ -22,6 +22,7 @@
  const CUSTOM_KEY='svi-yep-custom-items-v1';
  let custom={};try{custom=JSON.parse(localStorage.getItem(CUSTOM_KEY)||'{}')||{}}catch(e){custom={}}
  function saveCustom(){try{localStorage.setItem(CUSTOM_KEY,JSON.stringify(custom))}catch(e){}}
+ const gno=code=>String(sections.findIndex(s=>s[0]===code)+1).padStart(2,'0');
  function allItems(){
   const out=[];
   for(const [g,name] of sections){
@@ -33,6 +34,8 @@
     const ref=nums.length&&pre?pre+'.'+(Math.max(...nums)+1+n):letters.length?'B.1'+String.fromCharCode(Math.max(...letters)+1+n):String(n+1);
     out.push({id:'c-'+k,k,group:g,groupName:name,ref,title:v.title||'',sourceNote:'',custom:true})});
   }
+  // Mã thống nhất: NN.MM (NN = số thứ tự nhóm, MM = thứ tự trong nhóm)
+  const cnt={};out.forEach(i=>{cnt[i.group]=(cnt[i.group]||0)+1;i.srcRef=i.ref;i.ref=gno(i.group)+'.'+String(cnt[i.group]).padStart(2,'0')});
   return out}
  const state=id=>decisions[id]?.status||'pending';
  function save(){try{localStorage.setItem(KEY,JSON.stringify(decisions))}catch(e){}}
@@ -46,7 +49,7 @@
   $('tk-themes').innerHTML=THEMES.map(x=>'<button type="button" class="tk-theme'+(x.id===theme?' on':'')+'" data-theme="'+x.id+'" style="--c1:'+x.c1+';--c2:'+x.c2+'"><b>'+esc(x.name)+'</b><span>'+esc(x.msg)+'</span><small class="tk-theme-kw">'+esc(x.kw)+'</small><em>'+x.slogans.map(s=>esc(s.t)).join(' · ')+'</em></button>').join('');
  }
  // ===== Timeline: đơn vị phụ trách, hạn hoàn thành, tiến độ =====
- const OWNERS={svi:'SVI','agency':'Agency','hotel':'Khách sạn','svi-agency':'SVI + Agency','svi-hotel':'SVI + Khách sạn'};
+ const OWNERS={svi:'BTC','agency':'Agency','hotel':'Khách sạn','svi-agency':'BTC + Agency','svi-hotel':'BTC + Khách sạn'};
  const PHASES=[
   {no:1,name:'Chốt định hướng & brief agency',from:'2026-11-17',to:'2026-11-30'},
   {no:2,name:'Agency đề xuất & chọn agency',from:'2026-12-01',to:'2026-12-15'},
@@ -89,7 +92,7 @@
   return '<article class="tk-item tk-row is-'+cur+' '+tm.cls+'" data-id="'+it.id+'">'
    +'<div class="tk-ref">'+esc(it.ref)+'</div>'
    +'<div class="tk-titleblock">'+(it.custom?'<div class="tk-custrow"><input class="tk-cust-title" type="text" maxlength="200" value="'+esc(it.title)+'" placeholder="Nhập tên công việc..."/><button type="button" class="tk-cust-del" title="Xóa công việc này" aria-label="Xóa">×</button></div>':'<div class="tk-name">'+esc(it.title)+'</div>')
-   +'<div class="tk-meta"><select class="tk-own own-'+e.owner+'" aria-label="Đơn vị phụ trách">'+Object.entries(OWNERS).map(([k,l])=>'<option value="'+k+'"'+(k===e.owner?' selected':'')+'>'+l+'</option>').join('')+'</select>'+(showGroup?'<span class="tk-grp">'+esc(it.group)+' · '+esc(it.groupName)+'</span>':'')+'</div><div class="tk-people">'+PEOPLE.map(([k,l])=>'<label><span>'+l+'</span><input type="text" class="tk-person" data-field="'+k+'" list="tk-people-list" maxlength="60" value="'+esc(e[k])+'" placeholder="Nhập tên"/></label>').join('')+'</div></div>'
+   +'<div class="tk-meta"><select class="tk-own own-'+e.owner+'" aria-label="Đơn vị phụ trách">'+Object.entries(OWNERS).map(([k,l])=>'<option value="'+k+'"'+(k===e.owner?' selected':'')+'>'+l+'</option>').join('')+'</select>'+(showGroup?'<span class="tk-grp">'+esc(gno(it.group))+' · '+esc(it.groupName)+'</span>':'')+'</div><div class="tk-people">'+PEOPLE.map(([k,l])=>'<label><span>'+l+'</span><input type="text" class="tk-person" data-field="'+k+'" list="tk-people-list" maxlength="60" value="'+esc(e[k])+'" placeholder="Nhập tên"/></label>').join('')+'</div></div>'
    +'<div class="tk-duebox"><input type="date" class="tk-due" value="'+esc(e.due)+'" aria-label="Hạn hoàn thành"/><small class="tk-left">'+(e.due?'Hạn '+fmt(e.due)+' · ':'')+tm.txt+'</small></div>'
    +'<textarea class="tk-note" aria-label="Ghi chú cho '+esc(it.title)+'" placeholder="Ghi chú...">'+esc(decisions[it.id]?.note||'')+'</textarea>'
    +'<div class="tk-choices">'+[['keep','GIỮ'],['drop','LOẠI'],['pending','CHƯA CHỐT']].map(([a,l])=>'<button type="button" data-action="'+a+'" class="tk-choice'+(cur===a?' on':'')+'" aria-pressed="'+(cur===a)+'">'+l+'</button>').join('')+'</div>'
@@ -121,11 +124,11 @@
    if(none.length)out+='<section class="tk-section tk-phase"><div class="tk-section-head"><h3><span class="tk-ph-no">?</span>Chưa xếp lịch</h3><div class="tk-head-r"><span>Chọn hạn hoàn thành để đưa vào timeline</span></div></div>'+HEAD+none.map(i=>rowHtml(i,true)).join('')+'</section>';
   }else{
    for(const [code,name] of sections){const m=visible.filter(i=>i.group===code);if(!m.length)continue;
-    out+='<section class="tk-section"><div class="tk-section-head"><h3>'+esc(code)+' · '+esc(name)+'</h3><div class="tk-head-r"><span>'+m.length+' hạng mục</span><button type="button" class="tk-add" data-add-group="'+esc(code)+'" title="Thêm công việc vào nhóm này" aria-label="Thêm công việc vào nhóm '+esc(name)+'">+</button></div></div>'+HEAD+m.map(i=>rowHtml(i,false)).join('')+'</section>'}
+    out+='<section class="tk-section"><div class="tk-section-head"><h3>'+esc(gno(code))+' · '+esc(name)+'</h3><div class="tk-head-r"><span>'+m.length+' hạng mục</span><button type="button" class="tk-add" data-add-group="'+esc(code)+'" title="Thêm công việc vào nhóm này" aria-label="Thêm công việc vào nhóm '+esc(name)+'">+</button></div></div>'+HEAD+m.map(i=>rowHtml(i,false)).join('')+'</section>'}
   }
   $('tk-sections').innerHTML=(out||'<div class="tk-empty">Không có hạng mục phù hợp với bộ lọc.</div>')+'<datalist id="tk-people-list">'+peopleList().map(n=>'<option value="'+esc(n)+'">').join('')+'</datalist>';
  }
- for(const [code,name] of sections){const o=document.createElement('option');o.value=code;o.textContent=code+' · '+name;$('tk-group').appendChild(o)}
+ for(const [code,name] of sections){const o=document.createElement('option');o.value=code;o.textContent=gno(code)+' · '+name;$('tk-group').appendChild(o)}
  for(const [k,l] of Object.entries(OWNERS)){const o=document.createElement('option');o.value=k;o.textContent=l;$('tk-owner').appendChild(o)}
  ['tk-search','tk-group','tk-status','tk-owner'].forEach(id=>$(id).addEventListener('input',render));
  document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{view=b.dataset.view;try{localStorage.setItem(VIEW_KEY,view)}catch(_){};render()}));
@@ -191,7 +194,7 @@
   const pIdx=it=>{const p=phaseOf(eff(it).due);return p?p.no:99};
   list.sort((a,b)=>pIdx(a)-pIdx(b)||sortByDue(a,b));
   return list.map((it,i)=>{const e=eff(it),p=phaseOf(e.due),tm=timing(it);
-   return{stt:i+1,phase:p?'GĐ '+p.no+' · '+p.name:'Chưa xếp lịch',phaseNo:p?p.no:99,ref:it.ref,title:it.title||'(chưa đặt tên)',group:it.group+' · '+it.groupName,owner:OWNERS[e.owner]||e.owner,doer:e.doer,sup:e.sup,rep:e.rep,due:e.due,approve:LBL[state(it.id)],progress:tm.txt,overdue:tm.cls==='is-overdue',done:e.done,note:decisions[it.id]?.note||''}})}
+   return{stt:i+1,phase:p?'GĐ '+p.no+' · '+p.name:'Chưa xếp lịch',phaseNo:p?p.no:99,ref:it.ref,title:it.title||'(chưa đặt tên)',group:gno(it.group)+' · '+it.groupName,owner:OWNERS[e.owner]||e.owner,doer:e.doer,sup:e.sup,rep:e.rep,due:e.due,approve:LBL[state(it.id)],progress:tm.txt,overdue:tm.cls==='is-overdue',done:e.done,note:decisions[it.id]?.note||''}})}
  function themeName(){const t=THEMES.find(x=>x.id===theme);return t?t.name:'(chưa chốt chủ đề)'}
  function exportPdf(){
   const rows=exportRows(),now=new Date().toLocaleString('vi-VN');
