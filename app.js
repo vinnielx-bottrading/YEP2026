@@ -274,8 +274,8 @@ document.querySelectorAll('[data-filter-menu]').forEach(button=>button.addEventL
    (land?'.p1{display:grid;grid-template-columns:1.25fr 1fr;gap:12px;align-items:start}':'');
   const assume='Đồ uống: <b>free flow 3 giờ</b> · Lotte: <b>'+LOTTE_MENUS[S.lotteMenu].name+'</b> + '+LOTTE_DRINKS[S.lotteDrink].name+' · Le Méridien: <b>Gói '+LM_PKGS[S.lmMenu].name+'</b> · <b>Tổng chi phí chưa bao gồm 5% phí phục vụ.</b>';
   const scope=$('cx-pdf-scope').value==='all'?[0,1,2]:[S.view];
-  const html='<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"><title>SVI YEP – So sánh chi phí Lotte & Le Méridien</title><style>'+css+'</style></head><body>'+
-   '<h1>SVI YEP 2026–2027 · So sánh chi phí Lotte Saigon &amp; Le Méridien</h1><div class="meta">'+'Số liệu chốt'+' · xuất ngày '+new Date().toLocaleDateString('vi-VN')+'</div><div class="assume">'+assume+'</div>'+
+  const html='<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"><title>Year End Party 2026 – Mừng Xuân 2027 – So sánh chi phí Lotte & Le Méridien</title><style>'+css+'</style></head><body>'+
+   '<h1>Year End Party 2026 – Mừng Xuân 2027 · So sánh chi phí Lotte Saigon &amp; Le Méridien</h1><div class="meta">'+'Số liệu chốt'+' · xuất ngày '+new Date().toLocaleDateString('vi-VN')+'</div><div class="assume">'+assume+'</div>'+
    '<div class="p1"><div><h2>1 · TỔNG CHI PHÍ DỰ TRÙ THEO SỐ KHÁCH</h2><table>'+summaryHTML(d)+'</table></div><div><h2>KẾT LUẬN NHANH</h2><div class="verdict">'+verdict(d)+'</div><h2>LƯU Ý</h2><ul>'+notes().map(n=>'<li>'+n+'</li>').join('')+'</ul></div></div>'+
    scope.map((si,n)=>'<div class="pb"></div><h2>'+(2+n)+' · ĐỐI CHIẾU CHI TIẾT · '+d.G[si]+' KHÁCH</h2><table>'+cmpHTML(d,si,true)+'</table>').join('')+
    '</body></html>';
