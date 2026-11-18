@@ -133,7 +133,7 @@
  const who=(()=>{let n='';try{n=localStorage.getItem('svi-yep-user')||''}catch(_){};return n})();
  function setSync(state,msg){const el=$('tk-sync');if(!el)return;el.className='tk-sync '+state;el.querySelector('span').textContent=msg}
  function cacheTheme(){try{localStorage.setItem(THEME_KEY,theme)}catch(_){}}
- function titleOf(id){const c=(typeof CONCEPTS!=='undefined')&&CONCEPTS.find(x=>x.id===id);return c?'Ý tưởng: '+c.title:(allItems().find(i=>i.id===id)||{}).title||id}
+ function titleOf(id){const c=(typeof CONCEPTS!=='undefined')&&CONCEPTS.find(x=>x.id===id);return c?'Chương trình: '+c.title:(allItems().find(i=>i.id===id)||{}).title||id}
  function log(action,id,value){if(!cloud)return;cloud.child('log').push({at:firebase.database.ServerValue.TIMESTAMP,action,id:id||'',title:id?titleOf(id):'',value:value==null?'':String(value).slice(0,300),by:$('tk-user').value.trim()||'Không tên'}).catch(()=>{})}
  const LBL={keep:'GIỮ',drop:'LOẠI BỎ',pending:'CHƯA CHỐT'};
  function renderSafe(){if(editing){pendingRender=true;return}render()}
@@ -265,78 +265,34 @@
   if(v&&v.title.trim()&&!v.logged){custom[k]={...v,logged:true};saveCustom();if(cloud){cloud.child('custom/'+k).update({logged:true});log('add',id,(sections.find(s=>s[0]===v.group)||[v.group,''])[1])}}});
  $('tk-sections').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('input.tk-cust-title')){e.preventDefault();e.target.blur()}});
  // ===== Ý tưởng trang trí (ảnh minh họa + ghi chú thay đổi) =====
- const CONCEPTS=[
-  {id:'activities',set:'A',no:'01',title:'Các hoạt động',lead:'Khách đi qua câu chuyện “từ tầm nhìn đến vị thế” từ lúc bước vào đến khi ra về.',items:[
-   ['Ông đồ cho chữ','Đặt tại sảnh chờ, từ giờ đón khách đến trước khai tiệc (45–60 phút). Chuẩn bị sẵn khoảng 10 chữ hợp chủ đề: Vươn, Tầm, Phúc, An, Lộc, Tâm, Thịnh, Hợp…'],
-   ['Hành lang “Hành trình”','Hai khung tre mở dọc sảnh dẫn vào ballroom: Chương 1 · YEP 2025 · TẦM NHÌN → Chương 2 · YEP 2026 · VỊ THẾ; ánh sáng tăng dần về phía cửa ballroom.'],
-   ['Check-in & “Mảnh ghép vị thế”','Mỗi CBNV nhận một mảnh ghép khi check-in, ghi tên hoặc cam kết 2027 rồi gắn lên tường; cuối giờ đón khách các mảnh ghép tạo thành chữ SVI.'],
-   ['Khai mạc “Thắp sáng vị thế”','LED đang tách thành 2 cụm (Tầm nhìn · Vị thế) di chuyển hợp lại thành một màn 12 m, bùng sáng chủ đề; lãnh đạo các đơn vị cùng thực hiện nghi thức.'],
-   ['Bàn tiệc mang tên dấu mốc','Thay số bàn bằng tên dấu mốc, dự án nổi bật hoặc đơn vị thành viên, kèm một dòng giới thiệu ngắn.'],
-   ['Mosaic chân dung','Ảnh chụp CBNV khi check-in được ghép thành logo/chủ đề, trình chiếu trên LED ở phần kết.']]},
-  {id:'style',set:'A',no:'02',title:'Phong cách thiết kế',lead:'Tết Việt thanh lịch – nhẹ, thoáng, sang; rõ chất Việt Nam, không nặng trang trí.',items:[
-   ['Màu chủ đạo','Đỏ đậm – vàng kim – trắng ngà; nền sáng, đỏ dùng làm điểm nhấn.'],
-   ['Chất liệu & biểu tượng','Tre, mây đan, lụa, sơn mài, gốm Bát Tràng, hoa văn trống đồng Đông Sơn, hoa sen, mai vàng, đào hồng, quất.'],
-   ['Bố cục','Trang trí thấp và trải ngang (trần ballroom chỉ 4,2 m); tận dụng view sông và vách kính ở sảnh chờ.'],
-   ['Sảnh chờ','Góc ông đồ, hành lang Hành trình, check-in và bức tường mảnh ghép nối liền một mạch dọc hành lang 6 × 25 m.'],
-   ['Ballroom','Khăn đỏ đậm, áo ghế vàng champagne, hoa mai thấp giữa bàn, uplight hổ phách hắt tường, mai thấp hai bên sân khấu.'],
-   ['Tránh','Yếu tố kiến trúc Trung Hoa: mái cong đầu đao, rồng, nút thắt đỏ, chữ Hán, khung lưới, dãy đèn lồng đỏ tròn.']]},
-  {id:'led',set:'A',no:'03',title:'Màn hình LED & ánh sáng – futuristic',lead:'Trang trí mang chất Việt truyền thống, LED mang chất tương lai: thể hiện đúng câu chuyện “từ tầm nhìn đến vị thế”.',items:[
-   ['Thiết bị','LED 12 m ngang ghép từ 10 tấm di động có sẵn tại Le Méridien; kết hợp 28 đèn beam và 28 đèn PAR của khách sạn.'],
-   ['Ngôn ngữ hình ảnh','Motion graphics hạt vàng, đường line-art phát sáng, chiều sâu 3D, typography hiện đại; hoa mai/đào cách điệu dạng ánh sáng thay vì hình vẽ truyền thống.'],
-   ['Đón khách','Vòng lặp chuyển động chậm: hạt vàng trôi, hoa mai ánh sáng nở dần, tên chủ đề xuất hiện nhẹ.'],
-   ['Khai mạc','LED tách 2 cụm kể 2 chương (Tầm nhìn · Vị thế) → hợp thành một, hạt sáng bùng nổ thành tên chủ đề; đèn beam quét đồng bộ nhạc.'],
-   ['Tổng kết & vinh danh','Số liệu năm dạng biểu đồ 3D chuyển động; tên và chân dung người được vinh danh bay vào khung sáng.'],
-   ['Quay số & kết','Giao diện quay số dạng 3D futuristic; kết bằng mosaic chân dung CBNV ghép thành logo/chủ đề.']]},
-  {id:'a-show',set:'A',no:'04',title:'Biểu diễn & tương tác',lead:'Tiết mục mang hồn Việt được phối mới, sang trọng; cảm xúc ấm áp, gắn kết.',items:[
-   ['Mở màn','Múa đương đại chất liệu dân gian (nón, quạt, lụa) kết hợp hình ảnh LED kể hành trình từ tầm nhìn đến vị thế.'],
-   ['Âm nhạc','Hòa tấu nhạc cụ dân tộc phối mới (đàn tranh, sáo, trống) cùng ban nhạc; ca sĩ hát nhạc xuân.'],
-   ['Trình diễn áo dài','Màn trình diễn áo dài tông đỏ – vàng của CBNV các đơn vị thành viên, giới thiệu từng đơn vị.'],
-   ['Tương tác','Ông đồ cho chữ, bức tường mảnh ghép, mini-game đố vui về hành trình của SVI.'],
-   ['Dress code','Áo dài hoặc trang phục dạ tiệc tông đỏ – vàng – trắng ngà.']]},
-  {id:'b-activities',set:'B',no:'01',title:'Các hoạt động',lead:'Câu chuyện “từ tầm nhìn đến vị thế” được kể bằng công nghệ: khách tương tác bằng điện thoại, ánh sáng và màn hình.',items:[
-   ['Check-in QR & chân dung','Quét QR check-in, chụp chân dung tại chỗ; ảnh tự động đưa vào mosaic hiển thị cuối chương trình.'],
-   ['Hành lang ánh sáng “Hành trình”','Hai khung LED dây dọc sảnh chờ: YEP 2025 · TẦM NHÌN → YEP 2026 · VỊ THẾ; ánh sáng chạy theo bước chân khách.'],
-   ['Bức tường “Mảnh ghép vị thế”','Mảnh ghép lục giác mica phát sáng khắc tên CBNV, ghép dần thành chữ SVI.'],
-   ['Khai mạc đếm ngược','Đếm ngược digital, LED tách 2 cụm hợp thành một, light show 2–3 phút; lãnh đạo cùng kích hoạt nghi thức.'],
-   ['Live wall lời chúc','Khách gửi lời chúc, cam kết 2027 qua điện thoại; nội dung hiện trực tiếp trên LED giữa các tiết mục.'],
-   ['Photobooth 360°','Quay video xoay 360° tại sảnh, gửi ngay về điện thoại khách.']]},
-  {id:'b-style',set:'B',no:'02',title:'Phong cách thiết kế',lead:'Hiện đại, năng động, công nghệ: nền navy tối để ánh sáng và LED tỏa sáng, vàng kim làm điểm nhấn sang trọng.',items:[
-   ['Màu chủ đạo','Xanh navy đậm – vàng kim ánh kim – trắng sáng. Có thể chọn thiên vàng kim (sang, lễ hội) hoặc thiên navy (công nghệ, trẻ trung).'],
-   ['Chất liệu','Mica/acrylic, gương, kim loại xước vàng, đèn LED dây, neon line-art, vải satin navy.'],
-   ['Yếu tố Tết','Mai, đào cách điệu dạng hình học hoặc line-art phát sáng, hoa kim loại vàng; không dùng hoa văn truyền thống nặng.'],
-   ['Sảnh chờ','Hành lang 3 chương bằng khung LED dây, check-in QR, bức tường mảnh ghép lục giác mica phát sáng, photobooth 360°.'],
-   ['Ballroom','Khăn bàn navy, runner vàng kim, ghế chiavari vàng, bình thủy tinh hoa trắng kèm đèn, uplight navy – vàng đổi màu theo từng phần.'],
-   ['Ánh sáng nền','Tông tối, ánh sáng tập trung vào sân khấu và lối đi; mỗi phần chương trình một bảng màu riêng.']]},
-  {id:'b-led',set:'B',no:'03',title:'Màn hình LED & ánh sáng – digital',lead:'LED 12 m là “nhân vật chính”: đồ họa digital chuyển động theo nhịp nhạc, đồng bộ toàn bộ đèn sân khấu.',items:[
-   ['Ngôn ngữ hình ảnh','Lưới hạt sáng, đồ họa dữ liệu, đường quét neon, glitch nhẹ, typography chuyển động nhanh; tông navy – vàng kim.'],
-   ['Mở màn','Đếm ngược digital → LED tách 2 cụm kể 2 chương → hợp nhất thành một, logo và chủ đề dựng từ hạt sáng.'],
-   ['Light show','28 đèn beam + 28 đèn PAR của khách sạn lập trình theo timecode cùng nhạc và LED: màn light show 2–3 phút mở màn.'],
-   ['Hiệu ứng bổ sung (agency)','Laser mảnh, khói lạnh nền, thanh LED pixel quanh sân khấu, pháo giấy vàng kim. Cần kiểm tra quy định khói, laser và báo cháy với khách sạn (trần 4,2 m).'],
-   ['Vinh danh','Tên, chân dung và số liệu bay vào khung dạng thẻ 3D; nhạc và ánh sáng riêng cho từng hạng mục.'],
-   ['Quay số & tương tác','Giao diện số digital dạng slot/particle; kết quả bình chọn và lời chúc từ điện thoại hiển thị trực tiếp trên LED.']]},
-  {id:'b-show',set:'B',no:'04',title:'Biểu diễn & tương tác',lead:'Tiết mục trẻ trung, có nhịp, kết hợp ánh sáng và LED; giữ chất Tết bằng âm nhạc xuân phối mới.',items:[
-   ['Mở màn','Vũ đoàn LED / light dance đồng bộ với màn hình, hoặc múa đương đại kết hợp hình ảnh LED.'],
-   ['Trống hiện đại','Trống LED, trống điện tử phối cùng trống truyền thống: không khí Tết nhưng mang năng lượng mới.'],
-   ['Âm nhạc','Violin điện / saxophone cùng DJ remix nhạc xuân; ca sĩ trẻ phong cách pop; phần kết là dance party.'],
-   ['Tương tác','Check-in QR, bình chọn tiết mục yêu thích, gửi lời chúc qua điện thoại hiện lên LED (live wall), photobooth 360°.'],
-   ['Dress code','Navy – vàng kim hoặc “sparkle” (lấp lánh) để ảnh đồng bộ với không gian.']]}];
- const CONCEPT_KEY='svi-yep-concept-notes-v1';
+ // ===== Ý tưởng chương trình (bản tóm tắt cho Ban Lãnh đạo) =====
+ const FLOW=[
+  {zone:'SẢNH ĐÓN',sub:'Foyer · trước giờ khai mạc',steps:[
+   {id:'f-checkin',icon:'①',title:'Check-in',d:'Đón khách, nhận số bàn; lễ tân áo dài.'},
+   {id:'f-wish',icon:'②',title:'Bức tường điều ước',d:'Mỗi khách viết một lời chúc, dán thành chữ SVI. Lời chúc sẽ xuất hiện lại trên LED ở phần opening.'},
+   {id:'f-ongdo',icon:'③',title:'Ông đồ cho chữ',d:'Khách xin chữ đầu năm: Phúc, An, Tâm, Vươn…'},
+   {id:'f-photo',icon:'④',title:'Photobooth',d:'Chụp ảnh lưu niệm theo chủ đề chương trình.'}]},
+  {zone:'BALLROOM',sub:'Chương trình chính',steps:[
+   {id:'b-opening',icon:'1',title:'Múa opening hiện đại',time:'4–5 phút',d:'Kể câu chuyện chủ đề qua 3 màn, vũ công tương tác với màn hình LED:',sub:['TẦM NHÌN – ánh sáng mở đường, bình minh trên LED','HÀNH ĐỘNG – BỨT PHÁ – nhịp mạnh, vũ công “đẩy” các khối hình trên LED','VỊ THẾ – đội hình vươn cao; kết bài: lời chúc từ bức tường điều ước bay lên LED và hợp lại thành logo SVI']},
+   {id:'b-mc',icon:'2',title:'MC chào mừng',time:'3 phút',d:'Giới thiệu chương trình và khách mời.'},
+   {id:'b-speech',icon:'3',title:'Phát biểu của Chủ tịch',time:'10 phút',d:'Nhìn lại năm 2026, định hướng năm mới.'},
+   {id:'b-show',icon:'4',title:'Tiết mục hát / múa',time:'5 phút',d:'Tiết mục chuyển tiếp trước khi khai tiệc.'},
+   {id:'b-key',icon:'5',title:'Key moment & khai tiệc',time:'5 phút',pending:true,d:'Khoảnh khắc ấn tượng nhất chương trình, sau đó nâng ly khai tiệc. Nội dung key moment đang được cân nhắc.'},
+   {id:'b-after',icon:'6',title:'Tiệc & các phần tiếp theo',d:'Vinh danh, văn nghệ, giao lưu, bốc thăm may mắn, chúc Tết và kết thúc (theo khung chương trình BTC).'}]}];
+ const CONCEPTS=FLOW.flatMap(z=>z.steps);
+ const CONCEPT_KEY='svi-yep-flow-notes-v1';
  let cnotes={};try{cnotes=JSON.parse(localStorage.getItem(CONCEPT_KEY)||'{}')||{}}catch(e){cnotes={}}
  let cEditing=false;
  function saveC(){try{localStorage.setItem(CONCEPT_KEY,JSON.stringify(cnotes))}catch(e){}}
- let ideaTab='A';try{ideaTab=localStorage.getItem('svi-yep-idea-tab')||'A'}catch(_){}
  function renderConcept(){if(cEditing)return;
-  const card=c=>{const n=cnotes[c.id]||{};
-   return '<article class="tk-cc tk-cc-'+c.id+'" data-cid="'+c.id+'"><div class="tk-cc-top"><span class="tk-cc-no">'+c.no+'</span><h3>'+esc(c.title)+'</h3></div><p class="tk-cc-lead">'+esc(c.lead)+'</p><ul class="tk-cc-list">'+c.items.map(([k,v])=>'<li><b>'+esc(k)+'</b><span>'+esc(v)+'</span></li>').join('')+'</ul><textarea class="tk-cc-note" rows="3" placeholder="Ghi chú thay đổi cho nhóm ý tưởng này...">'+esc(n.note||'')+'</textarea>'+(n.by||n.at?'<small class="tk-cc-meta">Cập nhật: '+[n.by,n.at?new Date(n.at).toLocaleString('vi-VN'):''].filter(Boolean).map(esc).join(' · ')+'</small>':'')+'</article>'};
-  const IDEAS=[['A','Ý tưởng 1','Tết Việt thanh lịch','Đỏ đậm · vàng kim · trắng ngà – trang trí chất Việt, LED futuristic','#8e1b1b','#f2c45a'],['B','Ý tưởng 2','Digital Gala hiện đại','Xanh navy · vàng kim – LED digital, năng động, hiệu ứng ánh sáng, biểu diễn hiện đại','#0b1f3a','#d4af37']];
-  if(!IDEAS.some(x=>x[0]===ideaTab))ideaTab='A';
-  const cur=IDEAS.find(x=>x[0]===ideaTab);
-  $('tk-concept').innerHTML='<div class="tk-itabs" role="tablist">'+IDEAS.map(([k,l,n,d,c1,c2])=>'<button type="button" role="tab" class="tk-itab'+(k===ideaTab?' on':'')+'" aria-selected="'+(k===ideaTab)+'" data-idea="'+k+'" style="--c1:'+c1+';--c2:'+c2+'"><i></i><i></i><span>'+l+'</span><b>'+n+'</b></button>').join('')+'</div><div class="tk-cset tk-cset-'+cur[0]+'" style="--c1:'+cur[4]+';--c2:'+cur[5]+'"><div class="tk-cset-head"><b>'+cur[1]+' · '+cur[2]+'</b><span>'+cur[3]+'</span></div><div class="tk-concept-grid">'+CONCEPTS.filter(c=>(c.set||'A')===cur[0]).map(card).join('')+'</div></div>'}
+  const step=s=>{const n=cnotes[s.id]||{};
+   return '<li class="tk-step'+(s.pending?' is-pending':'')+'" data-cid="'+s.id+'"><span class="tk-step-no">'+s.icon+'</span><div class="tk-step-body"><div class="tk-step-top"><b>'+esc(s.title)+'</b>'+(s.time?'<em>'+esc(s.time)+'</em>':'')+(s.pending?'<span class="tk-step-flag">Đang cân nhắc</span>':'')+'</div><p>'+esc(s.d)+'</p>'+(s.sub?'<ol class="tk-step-sub">'+s.sub.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol>':'')
+    +'<details class="tk-step-note"'+(n.note?' open':'')+'><summary>Ghi chú'+(n.note?' ✎':'')+'</summary><textarea class="tk-cc-note" rows="2" placeholder="Ghi chú, góp ý cho phần này...">'+esc(n.note||'')+'</textarea>'+(n.by||n.at?'<small class="tk-cc-meta">Cập nhật: '+[n.by,n.at?new Date(n.at).toLocaleString('vi-VN'):''].filter(Boolean).map(esc).join(' · ')+'</small>':'')+'</details></div></li>'};
+  $('tk-concept').innerHTML='<div class="tk-flow">'+FLOW.map((z,i)=>'<section class="tk-zone tk-zone-'+i+'"><header><b>'+esc(z.zone)+'</b><span>'+esc(z.sub)+'</span></header><ol class="tk-steps">'+z.steps.map(step).join('')+'</ol></section>').join('<div class="tk-flow-arrow" aria-hidden="true">→</div>')+'</div>'}
  const cTimers={};
  $('tk-concept').addEventListener('input',e=>{if(!e.target.matches('.tk-cc-note'))return;const id=e.target.closest('[data-cid]').dataset.cid,note=e.target.value,by=$('tk-user').value.trim();
   cnotes[id]={...(cnotes[id]||{}),note,by,at:Date.now()};saveC();
   if(cloud){clearTimeout(cTimers[id]);cTimers[id]=setTimeout(()=>{cloud.child('concepts/'+id).set({note,by,at:firebase.database.ServerValue.TIMESTAMP});log('concept',id,note)},900)}});
- $('tk-concept').addEventListener('click',e=>{const b=e.target.closest('[data-idea]');if(!b)return;ideaTab=b.dataset.idea;try{localStorage.setItem('svi-yep-idea-tab',ideaTab)}catch(_){};cEditing=false;renderConcept()});
  $('tk-concept').addEventListener('focusin',e=>{if(e.target.matches('.tk-cc-note'))cEditing=true});
  $('tk-concept').addEventListener('focusout',e=>{if(e.target.matches('.tk-cc-note')){cEditing=false;setTimeout(renderConcept,0)}});
  renderConcept();

@@ -81,7 +81,7 @@ Tab THỰC ĐƠN đã bổ sung 3 Asian Set (Standard/Premium/Deluxe), 5 Buffet 
 - Cấu hình trong `firebase-config.js`; dữ liệu lưu tại nhánh `svi-yep-2026/tasks` của Realtime Database (`decisions`, `theme`, `log`).
 - Mọi người mở trang dùng chung một bộ lựa chọn; mất mạng thì lưu tạm trên máy và tự gửi lại.
 - Nút + ở đầu mỗi nhóm công việc để thêm công việc mới vào nhóm (tự đánh số tiếp, ví dụ 1.7; sửa tên trực tiếp, × để xóa); lưu tại `custom/{khóa}`, lựa chọn lưu như các mục khác.
-- Mục "Ý tưởng tổ chức": chia tab theo ý tưởng – Ý tưởng 1 · Tết Việt thanh lịch (đỏ đậm, vàng kim, trắng ngà) và Ý tưởng 2 · Digital Gala hiện đại (navy, vàng kim, LED digital). Mỗi ý tưởng gồm 4 nhóm đồng nhất: Các hoạt động · Phong cách thiết kế · Màn hình LED & ánh sáng · Biểu diễn & tương tác; mỗi nhóm có ô ghi chú (lưu `concepts/{id}`). Thêm ý tưởng mới = thêm 1 dòng vào mảng IDEAS và 4 thẻ trong CONCEPTS (tasks.js).
+- Mục "Ý tưởng chương trình" (bản tóm tắt cho Ban Lãnh đạo): SẢNH ĐÓN (check-in · bức tường điều ước · ông đồ · photobooth) → BALLROOM (1 múa opening hiện đại 3 màn Tầm nhìn – Hành động/Bứt phá – Vị thế, kết lời chúc hợp thành logo SVI · 2 MC · 3 phát biểu Chủ tịch · 4 tiết mục hát/múa · 5 key moment & khai tiệc (đang cân nhắc) · 6 các phần tiếp theo). Mỗi bước có ô ghi chú (lưu `concepts/{id}`); sửa nội dung trong mảng FLOW (tasks.js).
 - Đầu tab: "Hành trình chủ đề" YEP 2025 (Kỷ nguyên mới – Tầm nhìn mới, đã tổ chức đầu năm 2026) → YEP 2026 (sắp diễn ra). 2 chủ đề đề xuất cho YEP 2026: Tầm nhìn mới – Vị thế mới; Vững tầm nhìn – Vươn vị thế.
 - Ô "Người thao tác" ghi tên vào Lịch sử hoạt động (40 thao tác gần nhất).
 - Rules cần bật trên Firebase Console → Realtime Database → Rules:
