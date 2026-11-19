@@ -14,7 +14,7 @@ async def main():
     async with async_playwright() as p:
         b=await p.chromium.launch(); pg=await b.new_page(); errs=[]
         pg.on('pageerror',lambda e:errs.append(str(e)))
-        await pg.goto(URL); await pg.evaluate("localStorage.setItem('svi-yep-compare-choices',JSON.stringify({hours:2}))"); await pg.reload()
+        await pg.goto(URL); await pg.evaluate("localStorage.setItem('svi-yep-compare-choices',JSON.stringify({hours:2}));localStorage.setItem('svi-yep-unlock','8ca5f45ff1bcbd9716df54d16b918f04a892bca7eecded109b649f61c86e1c41')"); await pg.reload()
         await pg.click('#tab-compare')
         for lm,ld,mp in itertools.product(range(3),range(3),range(3)):
             await pg.select_option('#cx-lotte-menu',str(lm)); await pg.select_option('#cx-lotte-drink',str(ld)); await pg.select_option('#cx-lm-menu',str(mp))

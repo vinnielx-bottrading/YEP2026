@@ -7,7 +7,7 @@ async def main():
     async with async_playwright() as p:
         b=await p.chromium.launch(); pg=await b.new_page(); errs=[]
         pg.on('pageerror',lambda e:errs.append(str(e)))
-        await pg.goto(URL); await pg.evaluate("localStorage.clear()"); await pg.reload()
+        await pg.goto(URL); await pg.evaluate("localStorage.clear();localStorage.setItem('svi-yep-unlock','8ca5f45ff1bcbd9716df54d16b918f04a892bca7eecded109b649f61c86e1c41')"); await pg.reload()
         await pg.click('#tab-gem')
         async def total(setup, gi=2):
             return await pg.evaluate("""(setup)=>{const G=window.__gem;const s=G.fresh();['led_p3','wireless_mic','corkage_wine','corkage_spirits'].forEach(k=>s.items[k].on=false);s.items.motorbike_parking.qty=0;s.items.car_parking.qty=0;eval(setup);G.S=s;return Math.round(G.compute()[%d].total)}"""%gi, setup)
