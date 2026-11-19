@@ -102,3 +102,8 @@ Tab THỰC ĐƠN đã bổ sung 3 Asian Set (Standard/Premium/Deluxe), 5 Buffet 
 - Bộ lọc theo người (người chủ trì, phối hợp, giám sát), đơn vị chủ trì, trạng thái, kiểm tra, thời hạn, quyết định. Ô “Hướng dẫn vai trò, trạng thái & quy trình” ở đầu tab.
 - Trưởng BTC (giám sát, phê duyệt): Tạ Thị Thu Hồng.
 - Xuất Excel bằng ExcelJS (`vendor/exceljs.min.js`, MIT): 3 sheet Timeline (danh sách chọn trong ô, công thức tình trạng thời hạn, tô màu tự động, cố định tiêu đề) · Tong hop (theo đơn vị chủ trì, theo người chủ trì, theo giai đoạn – công thức COUNTIFS) · Huong dan. File `vendor/xlsx.min.js` cũ không còn dùng.
+
+## Khóa tab nội bộ
+- 5 tab Bảng tổng hợp báo giá · Hình ảnh minh họa · Thực đơn · So sánh chi phí · GEM Center chỉ mở khi nhập đúng token (mã hóa SHA-256 trong `app.js`, không lưu token gốc). Tab Danh mục công việc mở tự do và là tab mặc định.
+- Mở khóa một lần được ghi nhớ trên trình duyệt đó (`localStorage: svi-yep-unlock`); nút **🔓 Khóa lại** để khóa lại.
+- Lưu ý: đây là khóa giao diện cho trang tĩnh – nội dung vẫn nằm trong mã nguồn trang, không thay thế cho bảo mật máy chủ.
