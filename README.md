@@ -112,3 +112,6 @@ Tab THỰC ĐƠN đã bổ sung 3 Asian Set (Standard/Premium/Deluxe), 5 Buffet 
 - Tab mới **GÓP Ý HỢP ĐỒNG** (`contract.js`): bảng đối chiếu hợp đồng gốc của khách sạn và đề nghị của SVI, bảng đề nghị bổ sung của SVI (gồm mốc phí hủy 25% / 50% / 75% / 100%), ô ý kiến khác. Khách sạn nhập ý kiến vào cột **Ý kiến khách sạn**, lưu tự động lên Firebase (`svi-yep-2026/contract-lm/replies`), kèm tên người phản hồi và thời gian.
 - Token khách sạn chỉ mở tab này; token nội bộ mở được tất cả các tab.
 - Link gửi khách sạn: `<địa chỉ trang>#hop-dong` → chỉ hiện tab Góp ý hợp đồng, ẩn các tab và số liệu nội bộ.
+
+## Hồ sơ chọn địa điểm (lưu trữ)
+- 5 tab cũ (Báo giá, Hình ảnh, Thực đơn, So sánh chi phí, GEM Center) gom vào 1 tab **HỒ SƠ CHỌN ĐỊA ĐIỂM**. Bấm vào sẽ hỏi token nội bộ; đúng token mới hiện thanh 5 mục con. Giữ nguyên làm bằng chứng lưu trữ, không chỉnh nội dung.

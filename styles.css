@@ -602,3 +602,13 @@ body.hotel-view .content-tab:not(#tab-contract),body.hotel-view .stats,body.hote
 #tab-contract:hover:not(.active){background:linear-gradient(135deg,#118a5a,#19b276)}
 #tab-contract.active{background:linear-gradient(135deg,#0a5e3c,#0f7a4f);color:#fff;outline:2px solid #f2b705;outline-offset:2px}
 body.hotel-view #tab-contract::after{display:none!important}
+
+/* Hồ sơ chọn địa điểm (lưu trữ) */
+#tab-archive{background:#eef1f6;color:#3d4a60;border:1px dashed #9fb0c8}
+#tab-archive.active{background:#2f3d55;color:#fff;border:1px solid #2f3d55;box-shadow:0 3px 12px rgba(47,61,85,.25)}
+.archive-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:-6px 0 18px;padding:8px 10px;background:#f6f8fb;border:1px solid #dfe5ee;border-left:4px solid #2f3d55;border-radius:10px}
+.archive-tabs[hidden]{display:none!important}
+.archive-tabs .content-tab{padding:9px 14px;font-size:12px}
+.archive-tabs .content-tab.is-locked::after{display:none}
+body:not(.archive-open) .stats{display:none!important}
+body.hotel-view .archive-tabs{display:none!important}

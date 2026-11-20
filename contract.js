@@ -22,7 +22,7 @@
  const EXTRA=[
   ['v01','Giờ sử dụng sảnh','Ghi rõ giờ vào setup, giờ SVI nghiệm thu, giờ tiệc 18:00–22:00 và giờ tháo dỡ; các khung này không tính phí vượt giờ.'],
   ['v02','Bố trí sảnh','Ballroom 365 m² tầng 1, 10 khách/bàn tròn, kèm sơ đồ bố trí làm phụ lục.'],
-  ['v03','Không đổi sảnh','Chỉ thay đổi khi có văn bản đồng ý của SVI; khách sạn hủy hoặc dời thì hoàn cọc và bồi thường thêm một khoản bằng tiền cọc.'],
+  ['v03','Không đổi sảnh','Chỉ chốt Ballroom tầng 1; SVI không đồng ý đổi sảnh. Khách sạn đổi sảnh, hủy hoặc dời thì hoàn cọc và bồi thường thêm một khoản bằng tiền cọc.'],
   ['v04','Doanh thu tối thiểu','Chốt một con số và ghi rõ đã hay chưa gồm phí phục vụ, thuế; thuế GTGT tính theo quy định tại thời điểm xuất hóa đơn.'],
   ['v05','Ưu đãi đi kèm','Ghi vào hợp đồng welcome drink miễn phí và LED 12 m (nếu dùng) cùng giá trị.'],
   ['v06','Lịch thanh toán','Đợt 2 hạn 20/01/2027; bỏ chữ “Không hoàn trả” ở đợt 1; chi phí phát sinh thanh toán sau khi ký biên bản nghiệm thu và có hóa đơn.'],

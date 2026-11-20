@@ -31,10 +31,16 @@ document.getElementById('print').addEventListener('click',()=>window.print());re
    H[0]=H[0]+a|0;H[1]=H[1]+b2|0;H[2]=H[2]+c2|0;H[3]=H[3]+d|0;H[4]=H[4]+e|0;H[5]=H[5]+f|0;H[6]=H[6]+g|0;H[7]=H[7]+h|0}
   return H.map(x=>(x>>>0).toString(16).padStart(8,'0')).join('')}
  let unlocked=false,unlockedCt=false;try{unlocked=localStorage.getItem(UNLOCK_KEY)===HASH;unlockedCt=localStorage.getItem(UNLOCK_CT)===HASH_CT}catch(_){}
- const canOpen=name=>name==='contract'?(unlocked||unlockedCt):(!LOCKED.includes(name)||unlocked);
+ const SUBS=['prices','gallery','menus','compare','gem'];let lastSub='prices';
+ const canOpen=name=>name==='archive'?unlocked:name==='contract'?(unlocked||unlockedCt):(!LOCKED.includes(name)||unlocked);
  function paintLocks(){buttons.forEach(b=>b.classList.toggle('is-locked',!canOpen(b.dataset.panel)));const r=document.getElementById('tab-relock');if(r)r.hidden=!unlocked}
  function show(name){
-  buttons.forEach(btn=>{const on=btn.dataset.panel===name;btn.classList.toggle('active',on);btn.setAttribute('aria-selected',String(on));btn.tabIndex=on?0:-1});
+  if(name==='archive')name=lastSub;
+  const inArc=SUBS.includes(name);if(inArc)lastSub=name;
+  buttons.forEach(btn=>{const p=btn.dataset.panel,on=p===name||(p==='archive'&&inArc);btn.classList.toggle('active',on);btn.setAttribute('aria-selected',String(on));btn.tabIndex=on?0:-1});
+  const an=document.getElementById('archive-tabs');if(an)an.hidden=!inArc;
+  document.body.classList.toggle('archive-open',inArc);
+  if(!document.body.classList.contains('hotel-view')&&window.__hdr0){const h1=document.querySelector('header h1'),hp=document.querySelector('header p');if(inArc){h1.textContent=__hdr0.h1;hp.textContent=__hdr0.p}else{h1.textContent='Gala Dinner Year End Party 2026 – Mừng Xuân 2027';hp.textContent='SVI Group · Le Méridien Saigon · 29/01/2027'}}
   ['prices','gallery','menus','compare','gem','tasks','contract'].forEach(id=>{const p=document.getElementById('panel-'+id);if(p)p.hidden=id!==name});
  }
  let pending=null;
@@ -46,7 +52,7 @@ document.getElementById('print').addEventListener('click',()=>window.print());re
  document.body.appendChild(modal);
  modal.querySelector('form').addEventListener('submit',e=>{e.preventDefault();const v=modal.querySelector('input').value.trim();
   const hv=sha256(v);
-  if(hv===HASH){unlocked=true;try{localStorage.setItem(UNLOCK_KEY,HASH)}catch(_){}modal.hidden=true;hotelView(HOTEL);paintLocks();show(HOTEL?'contract':(pending||'prices'))}
+  if(hv===HASH){unlocked=true;try{localStorage.setItem(UNLOCK_KEY,HASH)}catch(_){}modal.hidden=true;hotelView(HOTEL);paintLocks();show(HOTEL?'contract':(pending||'archive'))}
   else if(hv===HASH_CT&&(pending==='contract'||!unlocked)){unlockedCt=true;try{localStorage.setItem(UNLOCK_CT,HASH_CT)}catch(_){}modal.hidden=true;hotelView(!unlocked||HOTEL);paintLocks();show('contract')}
   else{modal.querySelector('.lock-err').textContent='Token không đúng.';modal.querySelector('input').select()}});
  modal.querySelector('.lock-cancel').addEventListener('click',()=>{modal.hidden=true});
@@ -61,7 +67,7 @@ document.getElementById('print').addEventListener('click',()=>window.print());re
  });
  // Chế độ khách sạn: link …/#hop-dong chỉ hiện tab Góp ý hợp đồng
  // Chế độ khách sạn: link …/#hop-dong hoặc máy chỉ có token khách sạn → chỉ hiện tab Góp ý hợp đồng
- const hdr={h1:document.querySelector('header h1'),p:document.querySelector('header p'),eb:document.querySelector('header .eyebrow')};const hdr0={h1:hdr.h1&&hdr.h1.textContent,p:hdr.p&&hdr.p.textContent,eb:hdr.eb&&hdr.eb.textContent,title:document.title};
+ const hdr={h1:document.querySelector('header h1'),p:document.querySelector('header p'),eb:document.querySelector('header .eyebrow')};const hdr0={h1:hdr.h1&&hdr.h1.textContent,p:hdr.p&&hdr.p.textContent,eb:hdr.eb&&hdr.eb.textContent,title:document.title};window.__hdr0=hdr0;
  function hotelView(on){document.body.classList.toggle('hotel-view',on);
   if(on){if(hdr.h1)hdr.h1.textContent='Góp ý hợp đồng – Le Méridien Saigon';if(hdr.eb)hdr.eb.textContent='SVI GROUP × LE MÉRIDIEN SAIGON';if(hdr.p)hdr.p.textContent='SVI Group · Gala Dinner Year End Party 2026 – Mừng Xuân 2027 · 29/01/2027';document.title='Góp ý hợp đồng – SVI Group × Le Méridien Saigon'}
   else{if(hdr.h1)hdr.h1.textContent=hdr0.h1;if(hdr.p)hdr.p.textContent=hdr0.p;if(hdr.eb)hdr.eb.textContent=hdr0.eb;document.title=hdr0.title}}
@@ -71,7 +77,7 @@ document.getElementById('print').addEventListener('click',()=>window.print());re
  const origPaint=paintLocks;paintLocks=function(){origPaint();if(relockBtn)relockBtn.hidden=!(unlocked||unlockedCt)};
  paintLocks();
  if(hotelMode()){show('contract');if(!canOpen('contract')){document.getElementById('panel-contract').hidden=true;ask('contract')}}
- else show(unlocked?'prices':'tasks');
+ else show('tasks');
  window.__sviSha256=sha256;
 })();
 
