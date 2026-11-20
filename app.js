@@ -46,25 +46,31 @@ document.getElementById('print').addEventListener('click',()=>window.print());re
  document.body.appendChild(modal);
  modal.querySelector('form').addEventListener('submit',e=>{e.preventDefault();const v=modal.querySelector('input').value.trim();
   const hv=sha256(v);
-  if(hv===HASH){unlocked=true;try{localStorage.setItem(UNLOCK_KEY,HASH)}catch(_){}modal.hidden=true;paintLocks();show(pending||'prices')}
-  else if(hv===HASH_CT&&pending==='contract'){unlockedCt=true;try{localStorage.setItem(UNLOCK_CT,HASH_CT)}catch(_){}modal.hidden=true;paintLocks();show('contract')}
+  if(hv===HASH){unlocked=true;try{localStorage.setItem(UNLOCK_KEY,HASH)}catch(_){}modal.hidden=true;hotelView(HOTEL);paintLocks();show(HOTEL?'contract':(pending||'prices'))}
+  else if(hv===HASH_CT&&(pending==='contract'||!unlocked)){unlockedCt=true;try{localStorage.setItem(UNLOCK_CT,HASH_CT)}catch(_){}modal.hidden=true;hotelView(!unlocked||HOTEL);paintLocks();show('contract')}
   else{modal.querySelector('.lock-err').textContent='Token không đúng.';modal.querySelector('input').select()}});
  modal.querySelector('.lock-cancel').addEventListener('click',()=>{modal.hidden=true});
  modal.addEventListener('click',e=>{if(e.target===modal)modal.hidden=true});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!modal.hidden)modal.hidden=true});
  // Nút khóa lại
  const nav=buttons[0]&&buttons[0].parentElement;
- if(nav){const rl=document.createElement('button');rl.type='button';rl.id='tab-relock';rl.className='tab-relock';rl.textContent='🔓 Khóa lại';rl.title='Khóa lại các tab nội bộ trên máy này';rl.addEventListener('click',()=>{unlocked=false;unlockedCt=false;try{localStorage.removeItem(UNLOCK_KEY);localStorage.removeItem(UNLOCK_CT)}catch(_){}paintLocks();if(HOTEL){document.getElementById('panel-contract').hidden=true;ask('contract')}else show('tasks')});nav.appendChild(rl)}
+ if(nav){const rl=document.createElement('button');rl.type='button';rl.id='tab-relock';rl.className='tab-relock';rl.textContent='🔓 Khóa lại';rl.title='Khóa lại các tab nội bộ trên máy này';rl.addEventListener('click',()=>{unlocked=false;unlockedCt=false;try{localStorage.removeItem(UNLOCK_KEY);localStorage.removeItem(UNLOCK_CT)}catch(_){}hotelView(HOTEL);paintLocks();if(HOTEL){document.getElementById('panel-contract').hidden=true;ask('contract')}else show('tasks')});nav.appendChild(rl)}
  buttons.forEach((button,index)=>{
   button.addEventListener('click',()=>selectTab(button.dataset.panel));
   button.addEventListener('keydown',ev=>{if(ev.key!=='ArrowLeft'&&ev.key!=='ArrowRight')return;ev.preventDefault();const next=buttons[(index+(ev.key==='ArrowRight'?1:-1)+buttons.length)%buttons.length];selectTab(next.dataset.panel);next.focus()})
  });
  // Chế độ khách sạn: link …/#hop-dong chỉ hiện tab Góp ý hợp đồng
- if(HOTEL){document.body.classList.add('hotel-view');const h1=document.querySelector('header h1'),hp=document.querySelector('header p');if(h1)h1.textContent='Góp ý hợp đồng – Le Méridien Saigon';const eb=document.querySelector('header .eyebrow');if(eb)eb.textContent='SVI GROUP × LE MÉRIDIEN SAIGON';if(hp)hp.textContent='SVI Group · Gala Dinner Year End Party 2026 – Mừng Xuân 2027 · 29/01/2027';document.title='Góp ý hợp đồng – SVI Group × Le Méridien Saigon'}
+ // Chế độ khách sạn: link …/#hop-dong hoặc máy chỉ có token khách sạn → chỉ hiện tab Góp ý hợp đồng
+ const hdr={h1:document.querySelector('header h1'),p:document.querySelector('header p'),eb:document.querySelector('header .eyebrow')};const hdr0={h1:hdr.h1&&hdr.h1.textContent,p:hdr.p&&hdr.p.textContent,eb:hdr.eb&&hdr.eb.textContent,title:document.title};
+ function hotelView(on){document.body.classList.toggle('hotel-view',on);
+  if(on){if(hdr.h1)hdr.h1.textContent='Góp ý hợp đồng – Le Méridien Saigon';if(hdr.eb)hdr.eb.textContent='SVI GROUP × LE MÉRIDIEN SAIGON';if(hdr.p)hdr.p.textContent='SVI Group · Gala Dinner Year End Party 2026 – Mừng Xuân 2027 · 29/01/2027';document.title='Góp ý hợp đồng – SVI Group × Le Méridien Saigon'}
+  else{if(hdr.h1)hdr.h1.textContent=hdr0.h1;if(hdr.p)hdr.p.textContent=hdr0.p;if(hdr.eb)hdr.eb.textContent=hdr0.eb;document.title=hdr0.title}}
+ const hotelMode=()=>HOTEL||(unlockedCt&&!unlocked);
+ hotelView(hotelMode());
  const relockBtn=document.getElementById('tab-relock');
  const origPaint=paintLocks;paintLocks=function(){origPaint();if(relockBtn)relockBtn.hidden=!(unlocked||unlockedCt)};
  paintLocks();
- if(HOTEL){show('contract');if(!canOpen('contract')){document.getElementById('panel-contract').hidden=true;ask('contract')}}
+ if(hotelMode()){show('contract');if(!canOpen('contract')){document.getElementById('panel-contract').hidden=true;ask('contract')}}
  else show(unlocked?'prices':'tasks');
  window.__sviSha256=sha256;
 })();

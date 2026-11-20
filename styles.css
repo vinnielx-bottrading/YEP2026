@@ -594,3 +594,11 @@ textarea.tk-f{resize:vertical;min-height:54px}
 .ct-general .ct-reply{min-height:90px}
 body.hotel-view .content-tab:not(#tab-contract),body.hotel-view .stats,body.hotel-view footer{display:none!important}
 @media print{body.ct-printing header,body.ct-printing .content-tabs,body.ct-printing nav,body.ct-printing .stats,body.ct-printing footer,body.ct-printing .ct-bar button,body.ct-printing .content-panel:not(#panel-contract){display:none!important}body.ct-printing .ct-table{min-width:0!important}body.ct-printing .ct-reply{border:0;padding:0;min-height:0;resize:none}}
+
+/* Tab Góp ý hợp đồng nổi bật */
+#tab-contract{background:linear-gradient(135deg,#0f7a4f,#15a06a);color:#fff;border:1px solid #0d6a44;box-shadow:0 3px 12px rgba(15,122,79,.35);position:relative}
+#tab-contract span{color:#e6fff2;opacity:1}
+#tab-contract::after{content:"GỬI KHÁCH SẠN";position:absolute;top:-9px;right:10px;background:#f2b705;color:#3a2a00;font:800 9px/1 Inter,Arial,sans-serif;letter-spacing:.5px;padding:4px 6px;border-radius:5px;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+#tab-contract:hover:not(.active){background:linear-gradient(135deg,#118a5a,#19b276)}
+#tab-contract.active{background:linear-gradient(135deg,#0a5e3c,#0f7a4f);color:#fff;outline:2px solid #f2b705;outline-offset:2px}
+body.hotel-view #tab-contract::after{display:none!important}
