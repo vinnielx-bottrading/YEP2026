@@ -18,6 +18,8 @@ document.getElementById('print').addEventListener('click',()=>window.print());re
  const buttons=[...document.querySelectorAll('.content-tab')];
  const LOCKED=['prices','gallery','menus','compare','gem'];
  const HASH='8ca5f45ff1bcbd9716df54d16b918f04a892bca7eecded109b649f61c86e1c41',UNLOCK_KEY='svi-yep-unlock';
+ const HASH_CT='e99931a0ff2ae44b97d269761a38a1e3bf161aa8d007eaf5859324d7040b66c6',UNLOCK_CT='svi-yep-unlock-contract';
+ const HOTEL=/^#hop-?dong$/i.test(location.hash);
  // SHA-256 thuần JS (không phụ thuộc HTTPS/crypto.subtle)
  function sha256(str){const K=[],H=[];let n=2,c=0;const isP=x=>{for(let i=2;i*i<=x;i++)if(x%i===0)return false;return true};const fr=x=>(x-Math.floor(x))*4294967296|0;
   while(c<64){if(isP(n)){if(c<8)H[c]=fr(Math.pow(n,1/2));K[c]=fr(Math.pow(n,1/3));c++}n++}
@@ -28,33 +30,42 @@ document.getElementById('print').addEventListener('click',()=>window.print());re
     const t1=h+(r(e,6)^r(e,11)^r(e,25))+(e&f^~e&g)+K[i]+W[i]|0,t2=(r(a,2)^r(a,13)^r(a,22))+(a&b2^a&c2^b2&c2)|0;h=g;g=f;f=e;e=d+t1|0;d=c2;c2=b2;b2=a;a=t1+t2|0}
    H[0]=H[0]+a|0;H[1]=H[1]+b2|0;H[2]=H[2]+c2|0;H[3]=H[3]+d|0;H[4]=H[4]+e|0;H[5]=H[5]+f|0;H[6]=H[6]+g|0;H[7]=H[7]+h|0}
   return H.map(x=>(x>>>0).toString(16).padStart(8,'0')).join('')}
- let unlocked=false;try{unlocked=localStorage.getItem(UNLOCK_KEY)===HASH}catch(_){}
- function paintLocks(){buttons.forEach(b=>b.classList.toggle('is-locked',!unlocked&&LOCKED.includes(b.dataset.panel)));const r=document.getElementById('tab-relock');if(r)r.hidden=!unlocked}
+ let unlocked=false,unlockedCt=false;try{unlocked=localStorage.getItem(UNLOCK_KEY)===HASH;unlockedCt=localStorage.getItem(UNLOCK_CT)===HASH_CT}catch(_){}
+ const canOpen=name=>name==='contract'?(unlocked||unlockedCt):(!LOCKED.includes(name)||unlocked);
+ function paintLocks(){buttons.forEach(b=>b.classList.toggle('is-locked',!canOpen(b.dataset.panel)));const r=document.getElementById('tab-relock');if(r)r.hidden=!unlocked}
  function show(name){
   buttons.forEach(btn=>{const on=btn.dataset.panel===name;btn.classList.toggle('active',on);btn.setAttribute('aria-selected',String(on));btn.tabIndex=on?0:-1});
-  ['prices','gallery','menus','compare','gem','tasks'].forEach(id=>{document.getElementById('panel-'+id).hidden=id!==name});
+  ['prices','gallery','menus','compare','gem','tasks','contract'].forEach(id=>{const p=document.getElementById('panel-'+id);if(p)p.hidden=id!==name});
  }
  let pending=null;
  function ask(name){pending=name;const m=document.getElementById('lock-modal');m.hidden=false;m.querySelector('.lock-err').textContent='';const i=m.querySelector('input');i.value='';setTimeout(()=>i.focus(),30)}
- function selectTab(name){if(LOCKED.includes(name)&&!unlocked){ask(name);return}show(name)}
+ function selectTab(name){if(!canOpen(name)){ask(name);return}show(name)}
  // Hộp nhập token
  const modal=document.createElement('div');modal.id='lock-modal';modal.className='lock-modal';modal.hidden=true;
- modal.innerHTML='<form class="lock-box" autocomplete="off"><div class="lock-ico">🔒</div><h3>Nội dung nội bộ</h3><p>Nhập token để mở các tab báo giá, hình ảnh, thực đơn, so sánh chi phí và GEM Center.</p><input type="password" placeholder="Nhập token" aria-label="Token truy cập"/><div class="lock-err" role="alert"></div><div class="lock-actions"><button type="button" class="lock-cancel">Hủy</button><button type="submit" class="lock-ok">Mở khóa</button></div></form>';
+ modal.innerHTML='<form class="lock-box" autocomplete="off"><div class="lock-ico">🔒</div><h3>Nội dung nội bộ</h3><p>Vui lòng nhập token được cung cấp để xem nội dung.</p><input type="password" placeholder="Nhập token" aria-label="Token truy cập"/><div class="lock-err" role="alert"></div><div class="lock-actions"><button type="button" class="lock-cancel">Hủy</button><button type="submit" class="lock-ok">Mở khóa</button></div></form>';
  document.body.appendChild(modal);
  modal.querySelector('form').addEventListener('submit',e=>{e.preventDefault();const v=modal.querySelector('input').value.trim();
-  if(sha256(v)===HASH){unlocked=true;try{localStorage.setItem(UNLOCK_KEY,HASH)}catch(_){}modal.hidden=true;paintLocks();show(pending||'prices')}
+  const hv=sha256(v);
+  if(hv===HASH){unlocked=true;try{localStorage.setItem(UNLOCK_KEY,HASH)}catch(_){}modal.hidden=true;paintLocks();show(pending||'prices')}
+  else if(hv===HASH_CT&&pending==='contract'){unlockedCt=true;try{localStorage.setItem(UNLOCK_CT,HASH_CT)}catch(_){}modal.hidden=true;paintLocks();show('contract')}
   else{modal.querySelector('.lock-err').textContent='Token không đúng.';modal.querySelector('input').select()}});
  modal.querySelector('.lock-cancel').addEventListener('click',()=>{modal.hidden=true});
  modal.addEventListener('click',e=>{if(e.target===modal)modal.hidden=true});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!modal.hidden)modal.hidden=true});
  // Nút khóa lại
  const nav=buttons[0]&&buttons[0].parentElement;
- if(nav){const rl=document.createElement('button');rl.type='button';rl.id='tab-relock';rl.className='tab-relock';rl.textContent='🔓 Khóa lại';rl.title='Khóa lại các tab nội bộ trên máy này';rl.addEventListener('click',()=>{unlocked=false;try{localStorage.removeItem(UNLOCK_KEY)}catch(_){}paintLocks();show('tasks')});nav.appendChild(rl)}
+ if(nav){const rl=document.createElement('button');rl.type='button';rl.id='tab-relock';rl.className='tab-relock';rl.textContent='🔓 Khóa lại';rl.title='Khóa lại các tab nội bộ trên máy này';rl.addEventListener('click',()=>{unlocked=false;unlockedCt=false;try{localStorage.removeItem(UNLOCK_KEY);localStorage.removeItem(UNLOCK_CT)}catch(_){}paintLocks();if(HOTEL){document.getElementById('panel-contract').hidden=true;ask('contract')}else show('tasks')});nav.appendChild(rl)}
  buttons.forEach((button,index)=>{
   button.addEventListener('click',()=>selectTab(button.dataset.panel));
   button.addEventListener('keydown',ev=>{if(ev.key!=='ArrowLeft'&&ev.key!=='ArrowRight')return;ev.preventDefault();const next=buttons[(index+(ev.key==='ArrowRight'?1:-1)+buttons.length)%buttons.length];selectTab(next.dataset.panel);next.focus()})
  });
- paintLocks();show(unlocked?'prices':'tasks');
+ // Chế độ khách sạn: link …/#hop-dong chỉ hiện tab Góp ý hợp đồng
+ if(HOTEL){document.body.classList.add('hotel-view');const h1=document.querySelector('header h1'),hp=document.querySelector('header p');if(h1)h1.textContent='Góp ý hợp đồng – Le Méridien Saigon';const eb=document.querySelector('header .eyebrow');if(eb)eb.textContent='SVI GROUP × LE MÉRIDIEN SAIGON';if(hp)hp.textContent='SVI Group · Gala Dinner Year End Party 2026 – Mừng Xuân 2027 · 29/01/2027';document.title='Góp ý hợp đồng – SVI Group × Le Méridien Saigon'}
+ const relockBtn=document.getElementById('tab-relock');
+ const origPaint=paintLocks;paintLocks=function(){origPaint();if(relockBtn)relockBtn.hidden=!(unlocked||unlockedCt)};
+ paintLocks();
+ if(HOTEL){show('contract');if(!canOpen('contract')){document.getElementById('panel-contract').hidden=true;ask('contract')}}
+ else show(unlocked?'prices':'tasks');
  window.__sviSha256=sha256;
 })();
 

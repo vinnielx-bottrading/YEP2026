@@ -107,3 +107,8 @@ Tab THỰC ĐƠN đã bổ sung 3 Asian Set (Standard/Premium/Deluxe), 5 Buffet 
 - 5 tab Bảng tổng hợp báo giá · Hình ảnh minh họa · Thực đơn · So sánh chi phí · GEM Center chỉ mở khi nhập đúng token (mã hóa SHA-256 trong `app.js`, không lưu token gốc). Tab Danh mục công việc mở tự do và là tab mặc định.
 - Mở khóa một lần được ghi nhớ trên trình duyệt đó (`localStorage: svi-yep-unlock`); nút **🔓 Khóa lại** để khóa lại.
 - Lưu ý: đây là khóa giao diện cho trang tĩnh – nội dung vẫn nằm trong mã nguồn trang, không thay thế cho bảo mật máy chủ.
+
+## Tab Góp ý hợp đồng (gửi Le Méridien)
+- Tab mới **GÓP Ý HỢP ĐỒNG** (`contract.js`): bảng đối chiếu hợp đồng gốc của khách sạn và đề nghị của SVI, bảng đề nghị bổ sung của SVI (gồm mốc phí hủy 25% / 50% / 75% / 100%), ô ý kiến khác. Khách sạn nhập ý kiến vào cột **Ý kiến khách sạn**, lưu tự động lên Firebase (`svi-yep-2026/contract-lm/replies`), kèm tên người phản hồi và thời gian.
+- Token khách sạn chỉ mở tab này; token nội bộ mở được tất cả các tab.
+- Link gửi khách sạn: `<địa chỉ trang>#hop-dong` → chỉ hiện tab Góp ý hợp đồng, ẩn các tab và số liệu nội bộ.
